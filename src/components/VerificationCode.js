@@ -34,26 +34,60 @@ export default function VerificationCode() {
   const classes = useStyles();
 
   const [captcha, setCaptcha] = useState({});
-  const [vcError, setError] = useState(null);
+  const [vcStatus, setVCStatus] = useState({});
 
   useEffect(() => {
     if(!captcha.id) {
+      captcha.id = true;
       fetch("/users/captcha")
       .then(res => res.json())
       .then(
-          result => setCaptcha(result),
-          _ => setError('CAPTCHA service is not working'),
-        );
+        result => setCaptcha(result),
+        _ => setVCStatus({
+          display: true,
+          severity: "error",
+          message: "CAPTCHA service is not working",
+        }),
+      );
     }
   });
+
+  const sendVerificationCode = () => {
+    let rollVal = document.getElementById("vc-roll").value;
+    let captchaVal = {
+      id: captcha.id,
+      value: document.getElementById("vc-captcha").value,
+    };
+    fetch("/users/mail/"+rollVal, {
+      method: 'POST',
+      body: JSON.stringify(captchaVal),
+    }).then(
+      response => {
+        let code = response.status;
+        response.text().then(text =>
+          setVCStatus({
+            display: true,
+            severity: code === 202 ? "success" : "error",
+            message: text,
+          })
+        );
+      },
+      _ => setVCStatus({
+        display: true,
+        severity: "error",
+        message: "Error while making a request. Please check your internet connection."
+      }),
+    );
+    setCaptcha({});
+  }
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <form className={classes.form} noValidate>
-          {vcError && // Only display if vcError is not null
-            <Alert severity="error">{vcError}</Alert>
+          {vcStatus.display && // Only display if vcStatus.display is true
+            <Alert severity={vcStatus.severity}>{vcStatus.message}</Alert>
           }
           <Grid container justify="center">
             <img src={captcha.value} alt="CAPTCHA" />
@@ -63,7 +97,7 @@ export default function VerificationCode() {
             margin="normal"
             required
             fullWidth
-            id="captcha"
+            id="vc-captcha"
             label="CAPTCHA"
             name="captcha"
             autoFocus
@@ -75,14 +109,15 @@ export default function VerificationCode() {
             fullWidth
             name="roll"
             label="Roll Number"
-            id="roll"
+            id="vc-roll"
             autoComplete="roll"
           />
           <Grid container justify="center">
             <Button
-              type="submit"
+              type="button"
               variant="contained"
               color="primary"
+              onClick={sendVerificationCode}
               className={classes.submit}
             >
               Get Verification Code

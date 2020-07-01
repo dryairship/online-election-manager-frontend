@@ -1,7 +1,7 @@
 import React from 'react';
 import Box from '@material-ui/core/Box';
-import Login from './components/Login';
 import Copyright from './components/Copyright';
+import LRVTabbedPane from './components/LRVTabbedPane';
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         transform: 'translate(-50%, -50%)'
       }}
     >
-      <Login/>
+      <LRVTabbedPane/>
       <Box mt={8}>
         <Copyright />
       </Box>

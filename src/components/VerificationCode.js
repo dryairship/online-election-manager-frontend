@@ -9,24 +9,16 @@ import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-  },
-  media: {
-    height: 140,
   },
 }));
 
@@ -85,10 +77,10 @@ export default function VerificationCode() {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+        {vcStatus.display && // Only display if vcStatus.display is true
+          <Alert severity={vcStatus.severity}>{vcStatus.message}</Alert>
+        }
         <form className={classes.form} noValidate>
-          {vcStatus.display && // Only display if vcStatus.display is true
-            <Alert severity={vcStatus.severity}>{vcStatus.message}</Alert>
-          }
           <Grid container justify="center">
             <img src={captcha.value} alt="CAPTCHA" />
           </Grid>

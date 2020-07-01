@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Alert from '@material-ui/lab/Alert';
+import sjcl from 'sjcl';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,17 +34,65 @@ const useStyles = makeStyles((theme) => ({
 export default function Register() {
   const classes = useStyles();
 
+  const [rStatus, setRStatus] = useState({});
+
+  const registerUser = () => {
+    let rollVal = document.getElementById("r-roll").value;
+    let passwordVal = document.getElementById("r-password").value;
+    let confirmPasswordVal = document.getElementById("r-confirm-password").value;
+    let verificationCodeVal = document.getElementById("r-verification-code").value;
+    
+    if(passwordVal !== confirmPasswordVal) {
+      setRStatus({
+        display: true,
+        severity: "error",
+        message: "The passwords do not match."
+      });
+      return;
+    }
+
+    let passwordHash = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(passwordVal));
+    let formData = new FormData();
+    formData.append('roll', rollVal);
+    formData.append('pass', passwordHash);
+    formData.append('auth', verificationCodeVal);
+
+    fetch("/users/register", {
+      body: formData,
+      method: "POST"
+    }).then(
+      response => {
+        let code = response.status;
+        response.text().then(text => 
+          setRStatus({
+            display: true,
+            severity: code === 202 ? "success" : "error",
+            message: text,
+          })
+        );
+      },
+      _ => setRStatus({
+        display: true,
+        severity: "error",
+        message: "Error while making a request. Please check your internet connection."
+      }),
+    );
+  }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <form className={classes.form} noValidate>
+          {rStatus.display && // Only display if rStatus.display is true
+            <Alert severity={rStatus.severity}>{rStatus.message}</Alert>
+          }
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="roll"
+            id="r-roll"
             label="Roll Number"
             name="roll"
             autoComplete="roll"
@@ -56,7 +106,7 @@ export default function Register() {
             name="password"
             label="Password"
             type="password"
-            id="password"
+            id="r-password"
             autoComplete="current-password"
           />
           <TextField
@@ -67,22 +117,23 @@ export default function Register() {
             name="confirm-password"
             label="Confirm Password"
             type="password"
-            id="confirm-password"
+            id="r-confirm-password"
           />
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="verification-code"
+            id="r-verification-code"
             label="Verification Code"
             name="verification-code"
           />
           <Grid container justify="center">
             <Button
-              type="submit"
+              type="button"
               variant="contained"
               color="primary"
+              onClick={registerUser}
               className={classes.submit}
             >
               Register

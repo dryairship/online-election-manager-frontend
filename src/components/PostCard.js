@@ -28,6 +28,7 @@ export default function PostCard(props) {
     id: string
     name: string
     candidates: array of strings
+    updateChosenCount: function
   }
   */
 
@@ -35,7 +36,15 @@ export default function PostCard(props) {
 
   const [chosenCandidate, setChosenCandidate] = useState(null);
 
-  const onVote = candidate => setChosenCandidate(candidate);
+  const onVote = candidate => {
+    setChosenCandidate(candidate);
+    props.updateChosenCount(1);
+  }
+
+  const resetVote = () => {
+    setChosenCandidate(null);
+    props.updateChosenCount(-1);
+  }
 
   return (
     <Grid container
@@ -64,7 +73,7 @@ export default function PostCard(props) {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={() => setChosenCandidate(null)}>Reset Vote</Button>
+                <Button size="small" onClick={resetVote}>Reset Vote</Button>
               </CardActions>
             </Card>
           </Grid>

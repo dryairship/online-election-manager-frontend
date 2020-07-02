@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LRVTabbedPane() {
+export default function LRVTabbedPane(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -68,7 +68,7 @@ export default function LRVTabbedPane() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <Login/>
+        <Login onLogin={props.onLogin}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Register/>

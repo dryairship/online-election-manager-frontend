@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Copyright from './components/Copyright';
 import LRVTabbedPane from './components/LRVTabbedPane';
+import Home from './components/Home';
 
 function App() {
+  const [user, setUser] = useState(null);
+  const onLogin = newUser => setUser(newUser);
+
   return (
     <div 
       style={{
@@ -11,7 +15,10 @@ function App() {
         transform: 'translate(-50%, -50%)'
       }}
     >
-      <LRVTabbedPane/>
+      {user
+        ? <Home user={user}/>
+        : <LRVTabbedPane onLogin={onLogin}/>
+      }
       <Box mt={8}>
         <Copyright />
       </Box>

@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+export default function Login(props) {
   const classes = useStyles();
 
   const [lStatus, setLStatus] = useState({});
@@ -50,6 +50,12 @@ export default function Login() {
             message: text,
           })
         );
+        if(code === 200) {
+          props.onLogin({
+            roll: rollVal,
+            password: passwordVal,
+          });
+        }
       },
       _ => setLStatus({
         display: true,

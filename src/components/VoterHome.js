@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import PostCard from './PostCard';
 
 export default function VoterHome(props) {
@@ -33,7 +33,7 @@ export default function VoterHome(props) {
   }, []);
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Grid container spacing={4} justify="center" alignItems="center">
       <CssBaseline />
         <Alert severity="info">Voter Home!</Alert>
         {vhStatus.display && // Only display if vhStatus.display is true
@@ -41,9 +41,11 @@ export default function VoterHome(props) {
         }
         {availablePosts && 
           availablePosts.map(post => (
-            <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} />
+            <Grid item xs={12}>
+              <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} />
+            </Grid>
           ))
         }
-    </Container>
+    </Grid>
   );
 }

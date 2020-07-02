@@ -59,6 +59,9 @@ export default function PostCard(props) {
                 <Typography variant="h5" component="h2">
                   {chosenCandidate.Name}
                 </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  {chosenCandidate.Roll}
+                </Typography>
               </CardContent>
               <CardActions>
                 <Button size="small" onClick={() => setChosenCandidate(null)}>Reset Vote</Button>

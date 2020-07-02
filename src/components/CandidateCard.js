@@ -24,6 +24,7 @@ export default function CandidateCard(props) {
 
   /*
   candidateData: {
+    "Roll": ""
     "Username":"",
     "Name":"",
     "PublicKey":"",
@@ -62,6 +63,9 @@ export default function CandidateCard(props) {
             <CardContent>
               <Typography variant="h5" component="h2">
                 {candidateData.Name}
+              </Typography>
+              <Typography color="textSecondary" gutterBottom>
+                {candidateData.Roll}
               </Typography>
             </CardContent>
             <CardActions>

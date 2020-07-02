@@ -43,18 +43,22 @@ export default function Login(props) {
     }).then(
       response => {
         let code = response.status;
-        response.text().then(text => 
-          setLStatus({
-            display: true,
-            severity: code === 200 ? "success" : "error",
-            message: text,
-          })
-        );
         if(code === 200) {
-          props.onLogin({
-            roll: rollVal,
-            password: passwordVal,
+          response.json().then(userData =>{
+            props.onLogin({
+              roll: rollVal,
+              password: passwordVal,
+              data: userData,
+            })
           });
+        } else {
+          response.text().then(text => 
+            setLStatus({
+              display: true,
+              severity: "error",
+              message: text,
+            })
+          );
         }
       },
       _ => setLStatus({

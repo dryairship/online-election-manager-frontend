@@ -38,12 +38,12 @@ export default function PostCard(props) {
 
   const onVote = candidate => {
     setChosenCandidate(candidate);
-    props.updateChosenCount(1);
+    props.setChosenCandidate(props.id, candidate);
   }
 
   const resetVote = () => {
     setChosenCandidate(null);
-    props.updateChosenCount(-1);
+    props.setChosenCandidate(props.id, null);
   }
 
   return (

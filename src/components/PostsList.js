@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import PostCard from './PostCard';
 import Button from '@material-ui/core/Button';
+import ConfirmVotes from './ConfirmVotes';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -29,6 +30,8 @@ export default function PostsList(props) {
   const [availablePosts, setAvailablePosts] = useState(null);
   const [vhStatus, setVHStatus] = useState({});
   const [chosenCount, setChosenCount] = useState(0);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [chosenCandidates, setChosenCandidates] = useState({});
   
   useEffect(() => {
     if(!availablePosts) {
@@ -45,11 +48,26 @@ export default function PostsList(props) {
     }
   }, []);
 
-  const vote = () => {
-    console.log("Voting!!!!");
+  const updateChosenCount = delta => setChosenCount(chosenCount+delta);
+
+  const setChosenCandidate = (postId, candidate) => {
+    if(!candidate) updateChosenCount(-1);
+    else updateChosenCount(1);
+    setChosenCandidates({
+      ...chosenCandidates,
+      [postId]: candidate,
+    });
   }
 
-  const updateChosenCount = delta => setChosenCount(chosenCount+delta);
+  const vote = () => {
+    console.log("Voting!!!!");
+    setConfirmDialogOpen(true);
+  }
+
+  const onConfirmReply = reply  => {
+    setConfirmDialogOpen(false);
+    console.log(reply);
+  }
 
   return (
     <Grid container spacing={4} justify="center" alignItems="center">
@@ -61,7 +79,7 @@ export default function PostsList(props) {
         {availablePosts && 
           availablePosts.map(post => (
             <Grid item xs={12}>
-              <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} updateChosenCount={updateChosenCount}/>
+              <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} setChosenCandidate={setChosenCandidate}/>
             </Grid>
           ))
         }
@@ -79,6 +97,7 @@ export default function PostsList(props) {
             </Button>
           </Grid>
         }
+        <ConfirmVotes open={confirmDialogOpen} onClose={onConfirmReply} posts={availablePosts} candidates={chosenCandidates}/>
     </Grid>
   );
 }

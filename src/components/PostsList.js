@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import PostCard from './PostCard';
 import Button from '@material-ui/core/Button';
 import ConfirmVotes from './ConfirmVotes';
+import CalculateVoteData from '../utils/VoteCalculator';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -59,14 +60,18 @@ export default function PostsList(props) {
     });
   }
 
-  const vote = () => {
-    console.log("Voting!!!!");
+  const onSubmit = () => {
     setConfirmDialogOpen(true);
   }
 
   const onConfirmReply = reply  => {
     setConfirmDialogOpen(false);
-    console.log(reply);
+    if(reply) vote();
+  }
+
+  const vote = () => {
+    let voteData = CalculateVoteData(props.user, availablePosts, chosenCandidates);
+    console.log("Vote Data: "+JSON.stringify(voteData));
   }
 
   return (
@@ -90,7 +95,7 @@ export default function PostsList(props) {
               fullWidth
               variant="contained"
               color="primary"
-              onClick={vote}
+              onClick={onSubmit}
               className={classes.submit}
             >
               Submit

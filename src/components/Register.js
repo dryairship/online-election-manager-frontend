@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
-import sjcl from 'sjcl';
+import sjcl from 'sjcl-all';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

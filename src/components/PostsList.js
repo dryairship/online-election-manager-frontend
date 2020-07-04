@@ -72,6 +72,30 @@ export default function PostsList(props) {
   const vote = () => {
     let voteData = CalculateVoteData(props.user, availablePosts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
+    fetch("/election/submitVote", {
+      method: "POST",
+      body: JSON.stringify(voteData),
+    })
+    .then(
+      res => {
+        if(res.status===200){
+          props.onVote();
+        }else{
+          res.text().then(text =>
+            setVHStatus({
+              display: true,
+              severity: "error",
+              message: text,
+            })
+          );
+        }
+      },
+      _ => setVHStatus({
+        display: true,
+        severity: "error",
+        message: "Error while making a request. Please check your internet connection.",
+      })
+    );
   }
 
   return (

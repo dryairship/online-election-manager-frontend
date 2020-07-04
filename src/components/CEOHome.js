@@ -3,8 +3,9 @@ import Alert from '@material-ui/lab/Alert';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ResultBoard from './ResultBoard';
 import VoteDecryptor from '../utils/VoteDecryptor';
 import Keys from '../utils/Keys';
 
@@ -36,6 +37,7 @@ export default function CEOHome(props) {
     NOT_STARTED: 1,
     WAITING_FOR_DATA: 2,
     CALCULATING: 3,
+    FINISHED: 4,
   });
 
   const [fetchedPosts, setFetchedPosts] = React.useState(null);
@@ -108,7 +110,7 @@ export default function CEOHome(props) {
   const calculateAllResults = () => {
     let categorizedData = getCategorizedVotesAndCandidates();
     let ceoKey = Keys.unserializePrivateKey(props.user.data.privatekey);
-    let ballotIDMaps = {};
+    let ballotIdMaps = {};
     let candidateCounts = {};
     let numPosts = fetchedPosts.length;
     fetchedPosts.forEach((post, index) => {
@@ -118,14 +120,17 @@ export default function CEOHome(props) {
         categorizedData[post.postid].votes,
         ceoKey,
       );
-      ballotIDMaps[post.postid] = result[0];
+      ballotIdMaps[post.postid] = result[0];
       candidateCounts[post.postid] = result[1];
       setResultProgress(30+(index+1)*70/numPosts);
     });
     setFinalResult({
-      ballotIDMaps: ballotIDMaps,
+      posts: fetchedPosts,
+      ballotIdMaps: ballotIdMaps,
       candidateCounts: candidateCounts,
     });
+    setResultProgress(null);
+    setResultStatus(STATUS_ENUM.FINISHED);
   }
 
   const checkAndStartCalculation = () => {
@@ -141,7 +146,7 @@ export default function CEOHome(props) {
     [fetchedCandidates, fetchedPosts, fetchedVotes, resultStatus]);
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Grid container spacing={4} justify="center" alignItems="center">
       <CssBaseline />
         {ceohStatus.display && // Only display if ceohStatus.display is true
           <Alert severity={ceohStatus.severity}>{ceohStatus.message}</Alert>
@@ -152,9 +157,12 @@ export default function CEOHome(props) {
             <CircularProgress color="primary" variant="static" value={resultProgress}/>
           </div>
         }
+        {finalResult != null &&
+          <ResultBoard result={finalResult} />
+        }
         <Button type="button" onClick={onCalculateClick} color="primary" variant="contained">
           Calculate Results
         </Button>
-    </Container>
+    </Grid>
   );
 }

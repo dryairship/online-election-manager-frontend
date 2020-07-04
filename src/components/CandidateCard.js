@@ -69,7 +69,7 @@ export default function CandidateCard(props) {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" onClick={() => props.onVote(candidateData)}>Vote</Button>
+              <Button size="small" variant="contained" onClick={() => props.onVote(candidateData)}>Vote</Button>
             </CardActions>
           </Card>
         )}

@@ -7,8 +7,7 @@ function getRandomString(){
     return randHex;
 }
 
-function getVoteDataForPost(user, post, chosenCandidate) {
-    let ballotId = getRandomString();
+function getVoteDataForPost(user, post, chosenCandidate, ballotId) {
     let encryptedBallotId = sjcl.encrypt(user.password, ballotId);
 
     let publicKeyofCandidate = Keys.unserializePublicKey(chosenCandidate.PublicKey);
@@ -58,14 +57,18 @@ function getVoteDataForPost(user, post, chosenCandidate) {
 */
 export default function CalculateVoteData(user, posts, chosenCandidates){
     let voteData = [];
+    let ballotIds = {};
     posts.forEach(post => {
+        let ballotId = getRandomString();
         voteData.push(
             getVoteDataForPost(
                 user,
                 post,
                 chosenCandidates[post.PostID],
+                ballotId,
             )
         );
+        ballotIds[post.PostID] = ballotId;
     });
-    return voteData;
+    return [ voteData, ballotIds ];
 }

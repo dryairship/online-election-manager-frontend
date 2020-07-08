@@ -70,7 +70,7 @@ export default function PostsList(props) {
   }
 
   const vote = () => {
-    let voteData = CalculateVoteData(props.user, availablePosts, chosenCandidates);
+    let [ voteData, ballotIds ] = CalculateVoteData(props.user, availablePosts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
     fetch("/election/submitVote", {
       method: "POST",
@@ -79,7 +79,7 @@ export default function PostsList(props) {
     .then(
       res => {
         if(res.status===200){
-          props.onVote();
+          props.onVote(ballotIds);
         }else{
           res.text().then(text =>
             setVHStatus({

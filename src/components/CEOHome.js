@@ -3,7 +3,6 @@ import Alert from '@material-ui/lab/Alert';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import ResultBoard from './ResultBoard';
 import ResultCalculator from './ResultCalculator';
 import { getPostableResult } from '../utils/Results';
 
@@ -28,7 +27,7 @@ export default function CEOHome(props) {
   */
 
   const [ceohStatus, setCeohStatus] = React.useState({});
-  const [currentStatus, setCurrentStatus] = React.useState(CEO_STATUS_ENUM.RESULTS_SUBMITTED);
+  const [currentStatus, setCurrentStatus] = React.useState(CEO_STATUS_ENUM.VOTING_OVER);
   const [finalResult, setFinalResult] = React.useState(null);
 
   const setErrorMessage = err => setCeohStatus({

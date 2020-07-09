@@ -60,12 +60,14 @@ export default function ResultCalculator(props) {
       )
   }
 
-  React.useEffect(() => {
+  const onInit = () => {
     fetchAndSet("/ceo/fetchPosts", setFetchedPosts);
     fetchAndSet("/ceo/fetchCandidates", setFetchedCandidates);
     fetchAndSet("/ceo/fetchVotes", setFetchedVotes);
     setResultStatus(RESULT_STATUS_ENUM.WAITING_FOR_DATA);
-  }, []);
+  }
+
+  React.useEffect(onInit, []);
 
   const getCategorizedVotesAndCandidates = () => {
     let categories = {};
@@ -132,7 +134,6 @@ export default function ResultCalculator(props) {
     let ceoKey = Keys.unserializePrivateKey(props.ceoKey);
     let ballotIdMaps = {};
     let candidateCounts = {};
-    let numPosts = fetchedPosts.length;
     let posts = fetchedPosts;
     posts.forEach((post, index) => {
       let result = calculateResultsForPost(

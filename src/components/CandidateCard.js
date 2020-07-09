@@ -37,7 +37,7 @@ export default function CandidateCard(props) {
   const [candidateData, setCandidateData] = useState(null);
   const [ccStatus, setCCStatus] = useState({});
   
-  useEffect(() => {
+  const onInit = () => {
     if(!candidateData) {
       fetch("/election/getCandidateInfo/"+props.id)
       .then(res => res.json())
@@ -50,7 +50,8 @@ export default function CandidateCard(props) {
         })
       );
     }
-  }, []);
+  }
+  useEffect(onInit, []);
 
 
   return (

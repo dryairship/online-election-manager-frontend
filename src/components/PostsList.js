@@ -34,7 +34,7 @@ export default function PostsList(props) {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [chosenCandidates, setChosenCandidates] = useState({});
   
-  useEffect(() => {
+  const onInit = () => {
     if(!availablePosts) {
       fetch("/election/getVotablePosts")
       .then(res => res.json())
@@ -47,7 +47,8 @@ export default function PostsList(props) {
         })
       );
     }
-  }, []);
+  }
+  useEffect(onInit, []);
 
   const updateChosenCount = delta => setChosenCount(chosenCount+delta);
 
@@ -107,7 +108,7 @@ export default function PostsList(props) {
         }
         {availablePosts && 
           availablePosts.map(post => (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={post.PostID}>
               <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} setChosenCandidate={setChosenCandidate}/>
             </Grid>
           ))

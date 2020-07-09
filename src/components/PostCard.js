@@ -80,7 +80,7 @@ export default function PostCard(props) {
         )
         : (props.candidates &&
           props.candidates.map(candidate => (
-            <CandidateCard id={candidate} onVote={onVote}/>
+            <CandidateCard id={candidate} onVote={onVote} key={candidate}/>
           ))
         )
       }

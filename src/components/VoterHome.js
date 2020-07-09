@@ -22,11 +22,12 @@ export default function VoterHome(props) {
     setVoted(true);
   }
 
-  React.useEffect(() => {
+  const onInit = () => {
     if(props.user.data.Voted) {
       setBallotIds(DecryptBallotIds(props.user.data.BallotID, props.user.password));
     }
-  }, []);
+  }
+  React.useEffect(onInit, []);
 
   console.log(props.user)
   return (

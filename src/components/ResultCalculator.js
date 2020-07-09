@@ -5,16 +5,32 @@ import VoteDecryptor from '../utils/VoteDecryptor';
 import Keys from '../utils/Keys';
 
 const useStyles = makeStyles((theme) => ({
-    progress: {
-      display: 'flex',
-      '& > * + *': {
-        marginLeft: theme.spacing(2),
-      },
-      margin: theme.spacing(4),
+  progress: {
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
     },
-  }));
-  
-  
+    margin: theme.spacing(4),
+  },
+}));
+
+const RESULT_STATUS_ENUM = Object.freeze({
+  NOT_STARTED: 1,
+  WAITING_FOR_DATA: 2,
+  CALCULATING: 3,
+  FINISHED: 4,
+});
+
+const CANDIDATE_STATUS_ENUM = Object.freeze({
+  WON: "won",
+  ELIMINATED: "eliminated",
+  REELECTION: "reelection",
+  DEFEATED: "defeated",
+  NONE: "none",
+});
+
+export {CANDIDATE_STATUS_ENUM};
+
 export default function ResultCalculator(props) {
   /*
   props = {
@@ -26,18 +42,10 @@ export default function ResultCalculator(props) {
 
   const classes = useStyles();
 
-  const STATUS_ENUM = Object.freeze({
-    NOT_STARTED: 1,
-    WAITING_FOR_DATA: 2,
-    CALCULATING: 3,
-    FINISHED: 4,
-  });
-
   const [fetchedPosts, setFetchedPosts] = React.useState(null);
   const [fetchedVotes, setFetchedVotes] = React.useState(null);
   const [fetchedCandidates, setFetchedCandidates] = React.useState(null);
-  const [resultStatus, setResultStatus] = React.useState(STATUS_ENUM.NOT_STARTED);
-  const [resultProgress, setResultProgress] = React.useState(null);
+  const [resultStatus, setResultStatus] = React.useState(RESULT_STATUS_ENUM.NOT_STARTED);
 
   const fetchAndSet = (url, setter) => {
       fetch(url)
@@ -56,8 +64,7 @@ export default function ResultCalculator(props) {
     fetchAndSet("/ceo/fetchPosts", setFetchedPosts);
     fetchAndSet("/ceo/fetchCandidates", setFetchedCandidates);
     fetchAndSet("/ceo/fetchVotes", setFetchedVotes);
-    setResultProgress(1);
-    setResultStatus(STATUS_ENUM.WAITING_FOR_DATA);
+    setResultStatus(RESULT_STATUS_ENUM.WAITING_FOR_DATA);
   }, []);
 
   const getCategorizedVotesAndCandidates = () => {
@@ -66,6 +73,30 @@ export default function ResultCalculator(props) {
     fetchedVotes.forEach(vote => categories[vote.postid].votes.push(vote.data));
     fetchedCandidates.forEach(candidate => categories[candidate.PostID].candidates.push(candidate));
     return categories;
+  }
+
+  const addStatusToCandidates = (candidates, numVotes) => {
+    let maxCount = 0, minCount = 10000000;
+    candidates.forEach(candidate => {
+      maxCount = Math.max(maxCount, candidate.count);
+      minCount = Math.min(minCount, candidate.count);
+    });
+    if(2*maxCount > numVotes) {
+      candidates.forEach(candidate => {
+        if(candidate.count === maxCount)
+          candidate.status = CANDIDATE_STATUS_ENUM.WON;
+        else
+          candidate.status = CANDIDATE_STATUS_ENUM.DEFEATED;
+      });
+    } else {
+      candidates.forEach(candidate => {
+        if(candidate.count === minCount)
+          candidate.status = CANDIDATE_STATUS_ENUM.ELIMINATED;
+        else
+          candidate.status = CANDIDATE_STATUS_ENUM.REELECTION;
+      });
+    }
+    return candidates;
   }
 
   const calculateResultsForPost = (candidates, votes, ceoKey) => {
@@ -92,36 +123,39 @@ export default function ResultCalculator(props) {
     return [ballotIdMap, candidates];
   }
 
+  const isPostResolved = candidateCounts => {
+    return candidateCounts.some(candidate => candidate.status === CANDIDATE_STATUS_ENUM.WON);
+  }
+
   const calculateAllResults = () => {
     let categorizedData = getCategorizedVotesAndCandidates();
     let ceoKey = Keys.unserializePrivateKey(props.ceoKey);
     let ballotIdMaps = {};
     let candidateCounts = {};
     let numPosts = fetchedPosts.length;
-    fetchedPosts.forEach((post, index) => {
+    let posts = fetchedPosts;
+    posts.forEach((post, index) => {
       let result = calculateResultsForPost(
         categorizedData[post.postid].candidates,
         categorizedData[post.postid].votes,
         ceoKey,
       );
       ballotIdMaps[post.postid] = result[0];
-      candidateCounts[post.postid] = result[1];
-      setResultProgress(30+(index+1)*70/numPosts);
+      candidateCounts[post.postid] = addStatusToCandidates(result[1], categorizedData[post.postid].votes.length);
+      posts[index].resolved = isPostResolved(candidateCounts[post.postid]);
     });
-    setResultStatus(STATUS_ENUM.FINISHED);
+    setResultStatus(RESULT_STATUS_ENUM.FINISHED);
     props.onResultReady({
       posts: fetchedPosts,
       ballotIdMaps: ballotIdMaps,
       candidateCounts: candidateCounts,
     });
-    console.log("Sending result");
   }
 
   const checkAndStartCalculation = () => {
     if (fetchedPosts && fetchedCandidates && fetchedVotes &&
-    resultStatus === STATUS_ENUM.WAITING_FOR_DATA) {
-      setResultStatus(STATUS_ENUM.CALCULATING);
-      setResultProgress(30);
+    resultStatus === RESULT_STATUS_ENUM.WAITING_FOR_DATA) {
+      setResultStatus(RESULT_STATUS_ENUM.CALCULATING);
       calculateAllResults();
     }
   }
@@ -131,7 +165,7 @@ export default function ResultCalculator(props) {
 
   return (
     <div className={classes.progress}>
-      <CircularProgress color="primary" variant="static" value={resultProgress}/>
+      <CircularProgress color="primary"/>
     </div>
   );
 }

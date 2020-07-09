@@ -28,7 +28,7 @@ export default function CEOHome(props) {
   */
 
   const [ceohStatus, setCeohStatus] = React.useState({});
-  const [currentStatus, setCurrentStatus] = React.useState(CEO_STATUS_ENUM.VOTING_OVER);
+  const [currentStatus, setCurrentStatus] = React.useState(CEO_STATUS_ENUM.RESULTS_SUBMITTED);
   const [finalResult, setFinalResult] = React.useState(null);
 
   const setErrorMessage = err => setCeohStatus({
@@ -59,13 +59,36 @@ export default function CEOHome(props) {
           severity: res.status===202?"success":"error",
           message: text,
         }));
+        if(res.status === 202)
+          setCurrentStatus(CEO_STATUS_ENUM.RESULTS_SUBMITTED);
       },
       err => setErrorMessage(err)
     );
   }
 
   const onPrepareNextRoundClick = () => {
+    fetch("/ceo/prepareForNextRound", {
+      method: "POST",
+    })
+    .then(
+      res => {
+        res.text().then(text => setCeohStatus({
+          display: true,
+          severity: res.status===200?"success":"error",
+          message: text,
+        }));
+        if(res.status === 200)
+          setCurrentStatus(CEO_STATUS_ENUM.VOTING_NOT_STARTED);
+      },
+      err => setErrorMessage(err)
+    );
+  }
 
+  const onStartVotingClick = () => {
+    console.log("Start voting");
+  }
+  const onStopVotingClick = () => {
+    console.log("Stop voting");
   }
 
   return (
@@ -75,6 +98,17 @@ export default function CEOHome(props) {
           <Alert severity={ceohStatus.severity}>{ceohStatus.message}</Alert>
         }
         <Alert severity="info">CEO Home!<br/></Alert>
+
+        {currentStatus === CEO_STATUS_ENUM.VOTING_NOT_STARTED &&
+          <Button type="button" onClick={onStartVotingClick} color="primary" variant="contained">
+            Start Voting
+          </Button>
+        }
+        {currentStatus === CEO_STATUS_ENUM.VOTING_ON &&
+          <Button type="button" onClick={onStopVotingClick} color="primary" variant="contained">
+            Stop Voting
+          </Button>
+        }
         {currentStatus === CEO_STATUS_ENUM.VOTING_OVER &&
           <Button type="button" onClick={onCalculateClick} color="primary" variant="contained">
             Calculate Results

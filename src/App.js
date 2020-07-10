@@ -9,12 +9,13 @@ function App() {
   const onLogin = newUser => setUser(newUser);
 
   return (
-    <div 
-      style={{
-        position: 'absolute', left: '50%', top: '50%',
-        transform: 'translate(-50%, -50%)'
-      }}
-    >
+    <div style={{
+      width: '80%',
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      margin: '50px auto',
+    }}>
       {user
         ? <Home user={user}/>
         : <LRVTabbedPane onLogin={onLogin}/>

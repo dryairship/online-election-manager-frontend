@@ -101,12 +101,12 @@ export default function ResultCalculator(props) {
     return candidates;
   }
 
-  const calculateResultsForPost = (candidates, votes, ceoKey) => {
+  const calculateResultsForPost = (candidates, votes) => {
     candidates.forEach(candidate => {
       candidate.UnserializedPrivateKey = Keys.unserializePrivateKey(candidate.PrivateKey);
       candidate.count = 0;
     });
-    let strippedVotes = VoteDecryptor.stripVotes(votes, ceoKey);
+    let strippedVotes = VoteDecryptor.stripVotes(votes, props.ceoKey, props.ceoPassword);
     let ballotIdMap = {};
     strippedVotes.forEach(vote => {
       candidates.every(candidate => {
@@ -131,7 +131,6 @@ export default function ResultCalculator(props) {
 
   const calculateAllResults = () => {
     let categorizedData = getCategorizedVotesAndCandidates();
-    let ceoKey = Keys.unserializePrivateKey(props.ceoKey);
     let ballotIdMaps = {};
     let candidateCounts = {};
     let posts = fetchedPosts;
@@ -139,7 +138,6 @@ export default function ResultCalculator(props) {
       let result = calculateResultsForPost(
         categorizedData[post.postid].candidates,
         categorizedData[post.postid].votes,
-        ceoKey,
       );
       ballotIdMaps[post.postid] = result[0];
       candidateCounts[post.postid] = addStatusToCandidates(result[1], categorizedData[post.postid].votes.length);

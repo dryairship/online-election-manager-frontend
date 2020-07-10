@@ -37,4 +37,20 @@ function generateKeyPair(){
     return sjcl.ecc.elGamal.generateKeys(256);
 }
 
-export default {seedSJCL, generateKeyPair, unserializePublicKey, unserializePrivateKey, serializePublicKey, serializePrivateKey};
+function generateKeysForCEO(password) {
+    let pair = generateKeyPair();
+    let publicKey = serializePublicKey(pair.pub);
+    let privateKey = serializePrivateKey(pair.sec);
+    let encryptedPrivateKey = sjcl.encrypt(password, privateKey);
+    return [ publicKey, encryptedPrivateKey ];
+}
+
+export default {
+    seedSJCL,
+    generateKeyPair,
+    unserializePublicKey,
+    unserializePrivateKey,
+    serializePublicKey,
+    serializePrivateKey,
+    generateKeysForCEO
+};

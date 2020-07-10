@@ -1,7 +1,10 @@
 import sjcl from 'sjcl-all';
+import Keys from './Keys';
 
-function stripVotes(votes, privateKey) {
-    return votes.map(vote => sjcl.decrypt(privateKey, vote));
+function stripVotes(votes, privateKey, password) {
+    let decryptedPrivateKey = sjcl.decrypt(password, privateKey);
+    let unserializedPrivateKey = Keys.unserializePrivateKey(decryptedPrivateKey);
+    return votes.map(vote => sjcl.decrypt(unserializedPrivateKey, vote));
 }
 
 function tryDecryption(vote, privateKey) {

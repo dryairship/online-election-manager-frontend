@@ -67,10 +67,10 @@ export default function PostsList(props) {
 
   const onConfirmReply = reply  => {
     setConfirmDialogOpen(false);
-    if(reply) vote();
+    if(reply) submitVote();
   }
 
-  const vote = () => {
+  const submitVote = () => {
     let [ voteData, ballotIds ] = CalculateVoteData(props.user, availablePosts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
     fetch("/election/submitVote", {

@@ -51,6 +51,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LRVTabbedPane(props) {
+  /*
+  props = {
+    onLogin: function
+  }
+  */
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 

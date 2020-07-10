@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import Alert from '@material-ui/lab/Alert';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
+import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
+import ReplayRoundedIcon from '@material-ui/icons/ReplayRounded';
+import CheckBoxRoundedIcon from '@material-ui/icons/CheckRounded';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Chip from '@material-ui/core/Chip';
+import {CANDIDATE_STATUS_ENUM} from './ResultCalculator';
 
 
 import Table from '@material-ui/core/Table';
@@ -22,45 +24,43 @@ const useStyles = makeStyles(theme => ({
   cCard: {
     minWidth: 275,
   },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
   postName: {
     flex: '1 1 100%',
   },
   boardRoot: {
     flexGrow: 1,
   },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
+  chip: {
+    marginRight: theme.spacing(2),
+  },
+  candidateName: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  candidateEliminatedIcon: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    backgroundColor: theme.palette.error.main,
+  },
+  candidateWonIcon: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    backgroundColor: theme.palette.success.main,
+  },
+  candidateReElectionIcon: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    backgroundColor: theme.palette.primary.main,
+  },
+  candidateNoneIcon: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(3),
   },
 }));
-
-function BallotIdRow(props) {
-  /*
-  props = {
-    ballotId: 
-    name:
-    roll:
-  }
-  */
-  return (
-    <TableRow key={props.ballotId}>
-      <TableCell component="th" scope="row" align="center">{props.ballotId}</TableCell>
-      <TableCell align="center">{props.name}</TableCell>
-      <TableCell align="center">{props.roll}</TableCell>
-    </TableRow>
-  );
-}
 
 function CandidateResultRow(props) {
   /*
@@ -68,55 +68,30 @@ function CandidateResultRow(props) {
     name:
     roll:
     count:
+    status:
   }
   */
+  const classes = useStyles();
   return (
     <TableRow key={props.roll}>
-      <TableCell component="th" scope="row" align="center">{props.name}</TableCell>
+      <TableCell component="th" scope="row"className={classes.candidateName}>
+        {props.status===CANDIDATE_STATUS_ENUM.WON &&
+          <Avatar variant="rounded" className={classes.candidateWonIcon}><CheckBoxRoundedIcon/></Avatar>
+        }
+        {props.status===CANDIDATE_STATUS_ENUM.ELIMINATED &&
+          <Avatar variant="rounded" className={classes.candidateEliminatedIcon}><ClearRoundedIcon/></Avatar>
+        }
+        {props.status===CANDIDATE_STATUS_ENUM.REELECTION &&
+          <Avatar variant="rounded" className={classes.candidateReElectionIcon}><ReplayRoundedIcon/></Avatar>
+        }
+        {props.status===CANDIDATE_STATUS_ENUM.DEFEATED &&
+          <Avatar variant="rounded" className={classes.candidateNoneIcon}><ClearRoundedIcon/></Avatar>
+        }
+        {props.name}
+      </TableCell>
       <TableCell align="center">{props.roll}</TableCell>
       <TableCell align="center">{props.count}</TableCell>
     </TableRow>
-  );
-}
-
-function BallotIdGroup(props) {
-  /*
-  props = {
-    postName:
-    ballotIdMap:
-  }
-  */
-
-  const classes = useStyles();
-
-  return (
-    <Paper>
-      <Toolbar>
-        <Typography className={classes.postName} variant="h5" id="tableTitle" align="center" component="div">
-          {props.postName}
-        </Typography>
-      </Toolbar>
-      <TableContainer>
-        <Table aria-label="Ballot Id List">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Ballot ID</TableCell>
-              <TableCell align="center">Candidate Name</TableCell>
-              <TableCell align="center">Roll Number</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {
-              Object.keys(props.ballotIdMap).map(ballotId => 
-                <BallotIdRow ballotId={ballotId} 
-                  name={props.ballotIdMap[ballotId].Name}
-                  roll={props.ballotIdMap[ballotId].Roll}/>
-              )
-            }
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
   );
 }
 
@@ -125,6 +100,7 @@ function CandidateResultsGroup(props) {
   props = {
     postName:
     candidateCounts:
+    postId:
   }
   */
 
@@ -135,12 +111,14 @@ function CandidateResultsGroup(props) {
   }
 
   return (
-    <Paper>
-      <Toolbar>
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon/>}
+        aria-controls="panel1a-content" id="panel1a-header">
+        <Chip label="Ballot IDs" component="a" href={"/ballotids/"+props.postId} target={"_blank"} clickable className={classes.chip}/>
         <Typography className={classes.postName} variant="h5" id="tableTitle" align="center" component="div">
           {props.postName}
         </Typography>
-      </Toolbar>
+      </AccordionSummary>
       <TableContainer>
         <Table aria-label="Candidate Results List">
           <TableHead>
@@ -151,30 +129,34 @@ function CandidateResultsGroup(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {
-              props.candidateCounts.sort(compareCandidates).map(candidate => {
-                console.log(candidate);
-                return <CandidateResultRow name={candidate.Name} 
-                  roll={candidate.Roll}
-                  count={candidate.count}/>
-              }
-              )
-            }
+            {props.candidateCounts.sort(compareCandidates).map(candidate =>
+              <CandidateResultRow
+                name={candidate.name}
+                roll={candidate.roll}
+                count={candidate.count}
+                status={candidate.status}
+              />
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-    </Paper>
+    </Accordion>
   );
 }
 
 export default function ResultBoard(props) {
   /*
   props = {
-    result: {
-      posts: fetchedPosts,
-      ballotIdMaps: ballotIdMaps,
-      candidateCounts: candidateCounts,
-    }
+    results: [{
+      postId:
+      postName:
+      candidates: [{
+        name:
+        roll:
+        status:
+        count:
+      }]
+    }]
   }
   */
 
@@ -182,22 +164,14 @@ export default function ResultBoard(props) {
 
   return (
     <Grid container className={classes.boardRoot} spacing={2}
-      direction="column" justify="center" alignItems="center">
+      justify="center" alignItems="center">
       {
-        props.result.posts.map(post => 
-          <Grid item xs={12}>
-            <CandidateResultsGroup key={post.postname}
-              postName={post.postname} 
-              candidateCounts={props.result.candidateCounts[post.postid]}/>
-          </Grid>
-        )
-      }
-      {
-        props.result.posts.map(post => 
-          <Grid item xs={12}>
-            <BallotIdGroup key={post.postname}
-              postName={post.postname} 
-              ballotIdMap={props.result.ballotIdMaps[post.postid]}/>
+        props.results.map(post =>
+          <Grid item key={post.postId}>
+            <CandidateResultsGroup
+              postId={post.postId}
+              postName={post.postName}
+              candidateCounts={post.candidates}/>
           </Grid>
         )
       }

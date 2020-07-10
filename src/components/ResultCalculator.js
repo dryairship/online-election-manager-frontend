@@ -91,12 +91,16 @@ export default function ResultCalculator(props) {
           candidate.status = CANDIDATE_STATUS_ENUM.DEFEATED;
       });
     } else {
-      candidates.forEach(candidate => {
-        if(candidate.count === minCount)
-          candidate.status = CANDIDATE_STATUS_ENUM.ELIMINATED;
-        else
-          candidate.status = CANDIDATE_STATUS_ENUM.REELECTION;
-      });
+      if(minCount === maxCount){
+        candidates.forEach(candidate => candidate.status = CANDIDATE_STATUS_ENUM.REELECTION);
+      }else{
+        candidates.forEach(candidate => {
+          if(candidate.count === minCount)
+            candidate.status = CANDIDATE_STATUS_ENUM.ELIMINATED;
+          else
+            candidate.status = CANDIDATE_STATUS_ENUM.REELECTION;
+        });
+      }
     }
     return candidates;
   }

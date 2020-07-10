@@ -23,13 +23,13 @@ export default function CEOHome(props) {
       roll: 
       password:
       data:
-    }
+    },
+    onShowResults: function
   }
   */
 
   const [ceohStatus, setCeohStatus] = React.useState({});
   const [currentStatus, setCurrentStatus] = React.useState(CEO_STATUS_ENUM.VOTING_OVER);
-  const [finalResult, setFinalResult] = React.useState(null);
 
   const setErrorMessage = err => setCeohStatus({
     display: true,
@@ -40,13 +40,11 @@ export default function CEOHome(props) {
   const onCalculateClick = () => setCurrentStatus(CEO_STATUS_ENUM.CALCULATING_RESULTS);
 
   const onResultReady = result => {
-    console.log("Received result");
-    console.log(result);
-    setFinalResult(result);
     setCurrentStatus(CEO_STATUS_ENUM.RESULTS_CALCULATED);
+    submitResults(result);
   }
 
-  const onSubmitResultsClick = () => {
+  const submitResults = (finalResult) => {
     let postableResult = getPostableResult(finalResult);
     fetch("/ceo/submitResults", {
       method: "POST",
@@ -59,8 +57,10 @@ export default function CEOHome(props) {
           severity: res.status===202?"success":"error",
           message: text,
         }));
-        if(res.status === 202)
+        if(res.status === 202){
           setCurrentStatus(CEO_STATUS_ENUM.RESULTS_SUBMITTED);
+          props.onShowResults();
+        }
       },
       err => setErrorMessage(err)
     );
@@ -185,13 +185,6 @@ export default function CEOHome(props) {
             onError={setErrorMessage}
             onResultReady={onResultReady}
           />
-        </Grid>
-      }
-      {currentStatus === CEO_STATUS_ENUM.RESULTS_CALCULATED &&
-        <Grid item>
-          <Button type="button" onClick={onSubmitResultsClick} color="primary" variant="contained">
-            Submit Results
-          </Button>
         </Grid>
       }
       {currentStatus === CEO_STATUS_ENUM.RESULTS_SUBMITTED &&

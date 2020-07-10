@@ -11,14 +11,15 @@ export default function Home(props) {
       roll: 
       password:
       data:
-    }
+    },
+    onShowResults: function
   }
   */
   return (
     <Grid container>
       <CssBaseline />
       { props.user.roll === "CEO"
-        ? <Grid item xs={12}><CEOHome user={props.user}/></Grid>
+        ? <Grid item xs={12}><CEOHome user={props.user} onShowResults={props.onShowResults}/></Grid>
         : <Grid item xs={12}><VoterHome user={props.user}/></Grid>
       }
     </Grid>

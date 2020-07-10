@@ -144,46 +144,63 @@ export default function CEOHome(props) {
   React.useEffect(onInit, []);
 
   return (
-    <Grid container spacing={4} justify="center" alignItems="center" classes={{flexDirection: 'column'}}>
+    <Grid container spacing={4} justify="center" alignItems="center" direction="column">
       <CssBaseline />
-        {ceohStatus.display && // Only display if ceohStatus.display is true
+      {ceohStatus.display && // Only display if ceohStatus.display is true
+        <Grid item>
           <Alert severity={ceohStatus.severity}>{ceohStatus.message}</Alert>
-        }
-        <Alert severity="info">CEO Home!<br/></Alert>
+        </Grid>
+      }
 
-        {currentStatus === CEO_STATUS_ENUM.VOTING_NOT_STARTED &&
+      <Grid item>
+        <Alert severity="info">Welcome CEO!<br/></Alert>
+      </Grid>
+
+      {currentStatus === CEO_STATUS_ENUM.VOTING_NOT_STARTED &&
+        <Grid item>
           <Button type="button" onClick={onStartVotingClick} color="primary" variant="contained">
             Start Voting
           </Button>
-        }
-        {currentStatus === CEO_STATUS_ENUM.VOTING_ON &&
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.VOTING_ON &&
+        <Grid item>
           <Button type="button" onClick={onStopVotingClick} color="primary" variant="contained">
             Stop Voting
           </Button>
-        }
-        {currentStatus === CEO_STATUS_ENUM.VOTING_OVER &&
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.VOTING_OVER &&
+        <Grid item>
           <Button type="button" onClick={onCalculateClick} color="primary" variant="contained">
             Calculate Results
           </Button>
-        }
-        {currentStatus === CEO_STATUS_ENUM.CALCULATING_RESULTS &&
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.CALCULATING_RESULTS &&
+        <Grid item>
           <ResultCalculator
             ceoKey={props.user.data.privatekey}
             ceoPassword={props.user.password}
             onError={setErrorMessage}
             onResultReady={onResultReady}
           />
-        }
-        {currentStatus === CEO_STATUS_ENUM.RESULTS_CALCULATED &&
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.RESULTS_CALCULATED &&
+        <Grid item>
           <Button type="button" onClick={onSubmitResultsClick} color="primary" variant="contained">
             Submit Results
           </Button>
-        }
-        {currentStatus === CEO_STATUS_ENUM.RESULTS_SUBMITTED &&
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.RESULTS_SUBMITTED &&
+        <Grid item>
           <Button type="button" onClick={onPrepareNextRoundClick} color="primary" variant="contained">
             Prepare for Next Round
           </Button>
-        }
+        </Grid>
+      }
     </Grid>
   );
 }

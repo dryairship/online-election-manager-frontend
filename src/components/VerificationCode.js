@@ -50,6 +50,11 @@ export default function VerificationCode() {
       id: captcha.id,
       value: document.getElementById("vc-captcha").value,
     };
+    setVCStatus({
+      display: true,
+      severity: "success",
+      message: "Sending mail...",
+    })
     fetch("/users/mail/"+rollVal, {
       method: 'POST',
       body: JSON.stringify(captchaVal),

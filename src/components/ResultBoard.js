@@ -1,18 +1,11 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
-import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
-import ReplayRoundedIcon from '@material-ui/icons/ReplayRounded';
-import CheckBoxRoundedIcon from '@material-ui/icons/CheckRounded';
 import Typography from '@material-ui/core/Typography';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Chip from '@material-ui/core/Chip';
-import {CANDIDATE_STATUS_ENUM} from './ResultCalculator';
-
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -67,30 +60,19 @@ function CandidateResultRow(props) {
   props = {
     name:
     roll:
-    count:
-    status:
+    preference1:
+    preference2:
+    preference3:
   }
   */
   const classes = useStyles();
   return (
     <TableRow key={props.roll}>
-      <TableCell component="th" scope="row"className={classes.candidateName}>
-        {props.status===CANDIDATE_STATUS_ENUM.WON &&
-          <Avatar variant="rounded" className={classes.candidateWonIcon}><CheckBoxRoundedIcon/></Avatar>
-        }
-        {props.status===CANDIDATE_STATUS_ENUM.ELIMINATED &&
-          <Avatar variant="rounded" className={classes.candidateEliminatedIcon}><ClearRoundedIcon/></Avatar>
-        }
-        {props.status===CANDIDATE_STATUS_ENUM.REELECTION &&
-          <Avatar variant="rounded" className={classes.candidateReElectionIcon}><ReplayRoundedIcon/></Avatar>
-        }
-        {props.status===CANDIDATE_STATUS_ENUM.DEFEATED &&
-          <Avatar variant="rounded" className={classes.candidateNoneIcon}><ClearRoundedIcon/></Avatar>
-        }
-        {props.name}
-      </TableCell>
+      <TableCell component="th" scope="row" className={classes.candidateName}>{props.name}</TableCell>
       <TableCell align="center">{props.roll}</TableCell>
-      <TableCell align="center">{props.count}</TableCell>
+      <TableCell align="center">{props.preference1}</TableCell>
+      <TableCell align="center">{props.preference2}</TableCell>
+      <TableCell align="center">{props.preference3}</TableCell>
     </TableRow>
   );
 }
@@ -107,7 +89,16 @@ function CandidateResultsGroup(props) {
   const classes = useStyles();
 
   const compareCandidates = (a, b) => {
-    return b.count - a.count;
+    // if +ve => b comes before a
+    // if -ve => a comes before b
+    if(a.preference1 === b.preference1){
+      if(a.preference2 === b.preference2)
+        return b.preference3-a.preference3;
+      else
+        return b.preference2-a.preference2;
+    }else{
+      return b.preference1-a.preference1;
+    }
   }
 
   return (
@@ -123,9 +114,11 @@ function CandidateResultsGroup(props) {
         <Table aria-label="Candidate Results List">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Candidate Name</TableCell>
+              <TableCell align="left">Candidate Name</TableCell>
               <TableCell align="center">Roll Number</TableCell>
-              <TableCell align="center">Votes</TableCell>
+              <TableCell align="center">Pref. 1</TableCell>
+              <TableCell align="center">Pref. 2</TableCell>
+              <TableCell align="center">Pref. 3</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -133,8 +126,9 @@ function CandidateResultsGroup(props) {
               <CandidateResultRow
                 name={candidate.name}
                 roll={candidate.roll}
-                count={candidate.count}
-                status={candidate.status}
+                preference1={candidate.preference1}
+                preference2={candidate.preference2}
+                preference3={candidate.preference3}
               />
             )}
           </TableBody>
@@ -153,8 +147,10 @@ export default function ResultBoard(props) {
       candidates: [{
         name:
         roll:
-        status:
-        count:
+        status: (always "none" for now)
+        preference1:
+        preference2:
+        preference3:
       }]
     }]
   }

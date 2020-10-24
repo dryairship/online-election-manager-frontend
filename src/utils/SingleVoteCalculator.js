@@ -7,16 +7,14 @@ function getRandomString(){
     return randHex;
 }
 
-function getVoteDataForPost(user, post, chosenCandidates, ballotId) {
+function getSingleVoteDataForPost(user, post, chosenCandidate, ballotId) {
     let encryptedBallotId = sjcl.encrypt(user.password, ballotId);
-    let numChosen = chosenCandidates.length;
+
+    let publicKeyofCandidate = Keys.unserializePublicKey(chosenCandidate.PublicKey);
     let publicKeyofCEO = Keys.unserializePublicKey(user.data.CEOKey);
 
     let currentVote = ballotId;
-    for(let i=0; i<3; i++){
-        if(i>=numChosen) currentVote += "-0";
-        else currentVote += "-" + chosenCandidates[i].Roll;
-    }
+    currentVote = sjcl.encrypt(publicKeyofCandidate, currentVote);
     currentVote = sjcl.encrypt(publicKeyofCEO, currentVote);
     
     return {
@@ -46,42 +44,24 @@ function getVoteDataForPost(user, post, chosenCandidates, ballotId) {
             "Candidates":[""]
         }
     ],
-    chosenCandidates: {
-        "1": [
-            {
-                "Roll":"",
-                "Username":"",
-                "Name":"",
-                "PublicKey":"",
-                "Manifesto":"",
-                "State":int,
-                "KeyState":int
-            },{
-                "Roll":"",
-                "Username":"",
-                "Name":"",
-                "PublicKey":"",
-                "Manifesto":"",
-                "State":int,
-                "KeyState":int
-            },{
-                "Roll":"",
-                "Username":"",
-                "Name":"",
-                "PublicKey":"",
-                "Manifesto":"",
-                "State":int,
-                "KeyState":int
-            }
-        ]
+    chosenCandidate: {
+        "1": {
+            "Roll":"",
+            "Username":"",
+            "Name":"",
+            "PublicKey":"",
+            "Manifesto":"",
+            "State":int,
+            "KeyState":int
+        }
 */
-export default function CalculateVoteData(user, posts, chosenCandidates){
+export default function CalculateSingleVoteData(user, posts, chosenCandidates){
     let voteData = [];
     let ballotIds = {};
     posts.forEach(post => {
         let ballotId = getRandomString();
         voteData.push(
-            getVoteDataForPost(
+            getSingleVoteDataForPost(
                 user,
                 post,
                 chosenCandidates[post.PostID],

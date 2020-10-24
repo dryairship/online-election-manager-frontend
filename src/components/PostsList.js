@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import PostCard from './PostCard';
 import Button from '@material-ui/core/Button';
 import ConfirmVotes from './ConfirmVotes';
-import CalculateVoteData from '../utils/VoteCalculator';
+import CalculateSingleVoteData from '../utils/SingleVoteCalculator';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -71,7 +71,7 @@ export default function PostsList(props) {
   }
 
   const submitVote = () => {
-    let [ voteData, ballotIds ] = CalculateVoteData(props.user, availablePosts, chosenCandidates);
+    let [ voteData, ballotIds ] = CalculateSingleVoteData(props.user, availablePosts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
     fetch("/election/submitVote", {
       method: "POST",

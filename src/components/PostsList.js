@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,31 +23,15 @@ export default function PostsList(props) {
       data:
     }
     onVote: function
+    posts:
   }
   */
 
   const classes = useStyles();
 
-  const [availablePosts, setAvailablePosts] = useState(null);
   const [vhStatus, setVHStatus] = useState({});
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [chosenCandidates, setChosenCandidates] = useState({});
-  
-  const onInit = () => {
-    if(!availablePosts) {
-      fetch("/election/getVotablePosts")
-      .then(res => res.json())
-      .then(
-        result => setAvailablePosts(result),
-        _ => setVHStatus({
-          display: true,
-          severity: "error",
-          message: "Error while making a request. Please check your internet connection."
-        })
-      );
-    }
-  }
-  useEffect(onInit, []);
 
   const setPreferences = (postId, preferences) => {
     setChosenCandidates({
@@ -66,14 +50,14 @@ export default function PostsList(props) {
   }
 
   const areVotesValid = () => {
-    return availablePosts.every(post =>
+    return props.posts.every(post =>
       !chosenCandidates[post.PostID] || chosenCandidates[post.PostID].length === 0 ||
       chosenCandidates[post.PostID].length === Math.min(3, post.Candidates.length)
     );
   }
 
   const submitVote = () => {
-    let [ voteData, ballotIds ] = CalculateVoteData(props.user, availablePosts, chosenCandidates);
+    let [ voteData, ballotIds ] = CalculateVoteData(props.user, props.posts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
     fetch("/election/submitVote", {
       method: "POST",
@@ -108,14 +92,14 @@ export default function PostsList(props) {
         {vhStatus.display && // Only display if vhStatus.display is true
           <Alert severity={vhStatus.severity}>{vhStatus.message}</Alert>
         }
-        {availablePosts && 
-          availablePosts.map(post => (
+        {props.posts && 
+          props.posts.map(post => (
             <Grid item xs={12} key={post.PostID}>
               <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} setPreferences={setPreferences}/>
             </Grid>
           ))
         }
-        {availablePosts && areVotesValid() &&
+        {props.posts && areVotesValid() &&
           <Grid container justify="center">
             <Button
               type="button"
@@ -129,7 +113,7 @@ export default function PostsList(props) {
             </Button>
           </Grid>
         }
-        <ConfirmVotes open={confirmDialogOpen} onClose={onConfirmReply} posts={availablePosts} candidates={chosenCandidates}/>
+        <ConfirmVotes open={confirmDialogOpen} onClose={onConfirmReply} posts={props.posts} candidates={chosenCandidates}/>
     </Grid>
   );
 }

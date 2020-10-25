@@ -3,6 +3,8 @@ import Alert from '@material-ui/lab/Alert';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import ResultCalculator from './ResultCalculator';
+import { getPostableResult } from '../utils/Results';
 import Keys from '../utils/Keys';
 
 const CEO_STATUS_ENUM = Object.freeze({
@@ -34,6 +36,53 @@ export default function CEOHome(props) {
     severity: "error",
     message: err,
   });
+
+  const onCalculateClick = () => setCurrentStatus(CEO_STATUS_ENUM.CALCULATING_RESULTS);
+
+  const onResultReady = result => {
+    setCurrentStatus(CEO_STATUS_ENUM.RESULTS_CALCULATED);
+    submitResults(result);
+  }
+
+  const submitResults = (finalResult) => {
+    let postableResult = getPostableResult(finalResult);
+    fetch("/ceo/submitResults", {
+      method: "POST",
+      body: JSON.stringify(postableResult),
+    })
+    .then(
+      res => {
+        res.text().then(text => setCeohStatus({
+          display: true,
+          severity: res.status===202?"success":"error",
+          message: text,
+        }));
+        if(res.status === 202){
+          setCurrentStatus(CEO_STATUS_ENUM.RESULTS_SUBMITTED);
+          props.onShowResults();
+        }
+      },
+      err => setErrorMessage(err)
+    );
+  }
+
+  const onPrepareNextRoundClick = () => {
+    fetch("/ceo/prepareForNextRound", {
+      method: "POST",
+    })
+    .then(
+      res => {
+        res.text().then(text => setCeohStatus({
+          display: true,
+          severity: res.status===200?"success":"error",
+          message: text,
+        }));
+        if(res.status === 200)
+          setCurrentStatus(CEO_STATUS_ENUM.VOTING_NOT_STARTED);
+      },
+      err => setErrorMessage(err)
+    );
+  }
 
   const onStartVotingClick = () => {
     let [ publicKey, privateKey ] = Keys.generateKeysForCEO(props.user.password);
@@ -123,7 +172,26 @@ export default function CEOHome(props) {
       }
       {currentStatus === CEO_STATUS_ENUM.VOTING_OVER &&
         <Grid item>
-          <Alert severity="info">Please use the result calculator software to calculate and publish the results.<br/></Alert>
+          <Button type="button" onClick={onCalculateClick} color="primary" variant="contained">
+            Calculate Results
+          </Button>
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.CALCULATING_RESULTS &&
+        <Grid item>
+          <ResultCalculator
+            ceoKey={props.user.data.privatekey}
+            ceoPassword={props.user.password}
+            onError={setErrorMessage}
+            onResultReady={onResultReady}
+          />
+        </Grid>
+      }
+      {currentStatus === CEO_STATUS_ENUM.RESULTS_SUBMITTED &&
+        <Grid item>
+          <Button type="button" onClick={onPrepareNextRoundClick} color="primary" variant="contained">
+            Prepare for Next Round
+          </Button>
         </Grid>
       }
     </Grid>

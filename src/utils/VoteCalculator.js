@@ -9,7 +9,7 @@ function getRandomString(){
 
 function getVoteDataForPost(user, post, chosenCandidates, ballotId) {
     let encryptedBallotId = sjcl.encrypt(user.password, ballotId);
-    let numChosen = chosenCandidates.length;
+    let numChosen = chosenCandidates ? chosenCandidates.length : 0;
     let publicKeyofCEO = Keys.unserializePublicKey(user.data.CEOKey);
 
     let currentVote = ballotId;

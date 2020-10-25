@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import PostCard from './PostCard';
 import Button from '@material-ui/core/Button';
 import ConfirmVotes from './ConfirmVotes';
-import CalculateSingleVoteData from '../utils/SingleVoteCalculator';
+import CalculateVoteData from '../utils/VoteCalculator';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -30,7 +30,6 @@ export default function PostsList(props) {
 
   const [availablePosts, setAvailablePosts] = useState(null);
   const [vhStatus, setVHStatus] = useState({});
-  const [chosenCount, setChosenCount] = useState(0);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [chosenCandidates, setChosenCandidates] = useState({});
   
@@ -50,14 +49,10 @@ export default function PostsList(props) {
   }
   useEffect(onInit, []);
 
-  const updateChosenCount = delta => setChosenCount(chosenCount+delta);
-
-  const setChosenCandidate = (postId, candidate) => {
-    if(!candidate) updateChosenCount(-1);
-    else updateChosenCount(1);
+  const setPreferences = (postId, preferences) => {
     setChosenCandidates({
       ...chosenCandidates,
-      [postId]: candidate,
+      [postId]: preferences,
     });
   }
 
@@ -70,8 +65,15 @@ export default function PostsList(props) {
     if(reply) submitVote();
   }
 
+  const areVotesValid = () => {
+    return availablePosts.every(post =>
+      !chosenCandidates[post.PostID] || chosenCandidates[post.PostID].length === 0 ||
+      chosenCandidates[post.PostID].length === Math.min(3, post.Candidates.length)
+    );
+  }
+
   const submitVote = () => {
-    let [ voteData, ballotIds ] = CalculateSingleVoteData(props.user, availablePosts, chosenCandidates);
+    let [ voteData, ballotIds ] = CalculateVoteData(props.user, availablePosts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
     fetch("/election/submitVote", {
       method: "POST",
@@ -109,11 +111,11 @@ export default function PostsList(props) {
         {availablePosts && 
           availablePosts.map(post => (
             <Grid item xs={12} key={post.PostID}>
-              <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} setChosenCandidate={setChosenCandidate}/>
+              <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} setPreferences={setPreferences}/>
             </Grid>
           ))
         }
-        {availablePosts && chosenCount===availablePosts.length && 
+        {availablePosts && areVotesValid() &&
           <Grid container justify="center">
             <Button
               type="button"

@@ -69,7 +69,6 @@ export default function LRVTabbedPane(props) {
         <Tabs value={value} onChange={handleChange}>
           <Tab label="Login" {...a11yProps(0)} />
           <Tab label="Register" {...a11yProps(1)} />
-          <Tab label="Get Code" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -77,9 +76,6 @@ export default function LRVTabbedPane(props) {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Register/>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <VerificationCode/>
       </TabPanel>
     </div>
   );

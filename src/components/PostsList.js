@@ -51,8 +51,8 @@ export default function PostsList(props) {
 
   const areVotesValid = () => {
     return props.posts.every(post =>
-      !chosenCandidates[post.PostID] || chosenCandidates[post.PostID].length === 0 ||
-      chosenCandidates[post.PostID].length === Math.min(3, post.Candidates.length)
+      !chosenCandidates[post.postId] || chosenCandidates[post.postId].length === 0 ||
+      chosenCandidates[post.postId].length === Math.min(3, post.candidates.length)
     );
   }
 
@@ -88,14 +88,14 @@ export default function PostsList(props) {
   return (
     <Grid container spacing={4} justify="center" alignItems="center">
       <CssBaseline />
-        <Alert severity="info">Hi {props.user.data.Name}! Please cast your vote below.</Alert>
+        <Alert severity="info">Hi {props.user.data.name}! Please cast your vote below.</Alert>
         {vhStatus.display && // Only display if vhStatus.display is true
           <Alert severity={vhStatus.severity}>{vhStatus.message}</Alert>
         }
         {props.posts && 
           props.posts.map(post => (
-            <Grid item xs={12} key={post.PostID}>
-              <PostCard id={post.PostID} name={post.PostName} candidates={post.Candidates} setPreferences={setPreferences}/>
+            <Grid item xs={12} key={post.postId}>
+              <PostCard id={post.postId} name={post.postName} candidates={post.candidates} setPreferences={setPreferences}/>
             </Grid>
           ))
         }

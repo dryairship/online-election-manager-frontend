@@ -17,7 +17,7 @@ export default function VoterHome(props) {
   const [voted, setVoted] = useState(false);
   const [ballotIds, setBallotIds] = useState({});
   const [posts, setPosts] = useState(null);
-  const [electionState, setElectionState] = useState("0");
+  const [electionState, setElectionState] = useState("VotingNotYetStarted");
 
   const onVote = (ballotIds) => {
     setBallotIds(ballotIds);
@@ -25,15 +25,14 @@ export default function VoterHome(props) {
   }
 
   const onInit = () => {
-    if(props.user.data.Voted) {
-      setBallotIds(DecryptBallotIds(props.user.data.BallotID, props.user.password));
+    setElectionState(props.user.data.electionState);
+
+    if(props.user.data.voted) {
+      setBallotIds(DecryptBallotIds(props.user.data.ballotIds, props.user.password));
     }
-    fetch("/election/getElectionState")
-    .then(res => res.text())
-    .then(state => setElectionState(state));
 
     if(!posts) {
-      fetch("/election/getVotablePosts")
+      fetch("/data/candidates")
       .then(res => res.json())
       .then(result => setPosts(result));
     }
@@ -41,21 +40,21 @@ export default function VoterHome(props) {
   React.useEffect(onInit, []);
 
   return (
-    (props.user.data.Voted || voted)
+    (props.user.data.voted || voted)
     ? (
       <Alert severity="success">
-        Hi {props.user.data.Name}! Your vote has been submitted.<br/>
+        Hi {props.user.data.name}! Your vote has been submitted.<br/>
         {posts && Object.keys(ballotIds).map(postId =>
           <div key={postId}>
-            <p>Ballot Id for your vote for {posts.find(post=>post.PostID===postId).PostName}:</p>
+            <p>Ballot Id for your vote for {posts.find(post=>post.postId===postId).postName}:</p>
             <p>{ballotIds[postId]}</p>
           </div>
         )}
       </Alert>
     )
-    : (electionState === "1"
+    : (electionState === "AcceptingVotes"
       ? <PostsList user={props.user} onVote={onVote} posts={posts}/>
-      : <Alert severity="success"> Hi {props.user.data.Name}! Please wait for the voting to start.</Alert>
+      : <Alert severity="success"> Hi {props.user.data.name}! Please wait for the voting to start.</Alert>
     )
   );
 }

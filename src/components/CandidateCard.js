@@ -17,60 +17,27 @@ const useStyles = makeStyles({
 export default function CandidateCard(props) {
   /*
   props = {
-    id: string // Candidate ID
+    id: candidate {name, roll} // Candidate ID
     onVote: function
   }
   */
 
-  /*
-  candidateData: {
-    "Roll": ""
-    "Username":"",
-    "Name":"",
-    "PublicKey":"",
-    "Manifesto":"",
-    "State":1,
-    "KeyState":0}
-  */
-
   const classes = useStyles();
-  const [candidateData, setCandidateData] = useState(null);
-  const [ccStatus, setCCStatus] = useState({});
-  
-  const onInit = () => {
-    if(!candidateData) {
-      fetch("/election/getCandidateInfo/"+props.id)
-      .then(res => res.json())
-      .then(
-        result => setCandidateData(result),
-        _ => setCCStatus({
-          display: true,
-          severity: "error",
-          message: "Error while making a request. Please check your internet connection."
-        })
-      );
-    }
-  }
-  useEffect(onInit, []);
-
 
   return (
     <Grid item xs={3} className={classes.cCard}>
-        {ccStatus.display && // Only display if ccStatus.display is true
-          <Alert severity={ccStatus.severity}>{ccStatus.message}</Alert>
-        }
-        {candidateData && (
+        {props.id && (
           <Card>
             <CardContent>
               <Typography variant="h5" component="h2">
-                {candidateData.Name}
+                {props.id.name}
               </Typography>
               <Typography color="textSecondary" gutterBottom>
-                {candidateData.Roll}
+                {props.id.roll}
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" variant="contained" onClick={() => props.onVote(candidateData)}>Vote</Button>
+              <Button size="small" variant="contained" onClick={() => props.onVote(props.id)}>Vote</Button>
             </CardActions>
           </Card>
         )}

@@ -36,13 +36,13 @@ export default function ConfirmVotes(props) {
             IMPORTANT: You will not be able to change your vote after you click on 'Confirm'.<br/><br/>
             {props.posts && props.candidates &&
               props.posts.map(post => (
-                <ListItem key={post.PostID} dense={true}>
+                <ListItem key={post.postId} dense={true}>
                   <ListItemText disableTypography={true}
-                    primary={post.PostName+": "}
-                    secondary={props.candidates[post.PostID] && props.candidates[post.PostID].length > 0 ?
+                    primary={post.postName+": "}
+                    secondary={props.candidates[post.postId] && props.candidates[post.postId].length > 0 ?
                     <ol>
-                      {props.candidates[post.PostID].map(candidate =>
-                        <li key={candidate.Roll}>{candidate.Name+" ("+candidate.Roll+")"}</li>
+                      {props.candidates[post.postId].map(candidate =>
+                        <li key={candidate.roll}>{candidate.name+" ("+candidate.roll+")"}</li>
                       )}
                     </ol>
                     :

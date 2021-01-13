@@ -28,7 +28,7 @@ export default function PostCard(props) {
   props = {
     id: string
     name: string
-    candidates: array of strings
+    candidates: array of candidates {name, roll}
     updatePreferences: function
   }
   */
@@ -82,10 +82,10 @@ export default function PostCard(props) {
                 {preferences.map((candidate, index) => (
                   <div key={index}>
                     <Typography variant="h5" component="h2">
-                      {(index+1)+". "+candidate.Name}
+                      {(index+1)+". "+candidate.name}
                     </Typography>
                     <Typography color="textSecondary" gutterBottom>
-                    &nbsp;&nbsp;&nbsp;&nbsp;{candidate.Roll}
+                    &nbsp;&nbsp;&nbsp;&nbsp;{candidate.roll}
                     </Typography>
                   </div>
                 ))}
@@ -98,7 +98,7 @@ export default function PostCard(props) {
         )
       }
       {props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
-        props.candidates.filter(cand => !preferences.find(el => cand.endsWith(el.Roll)))
+        props.candidates.filter(cand => !preferences.find(el => cand.roll==el.roll))
         .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
       }
     </Grid>

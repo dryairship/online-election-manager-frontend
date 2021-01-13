@@ -10,19 +10,19 @@ function getRandomString(){
 function getVoteDataForPost(user, post, chosenCandidates, ballotId) {
     let encryptedBallotId = sjcl.encrypt(user.password, ballotId);
     let numChosen = chosenCandidates ? chosenCandidates.length : 0;
-    let publicKeyofCEO = Keys.unserializePublicKey(user.data.CEOKey);
+    let publicKeyofCEO = Keys.unserializePublicKey(user.data.ceoKey);
 
     let currentVote = ballotId;
     for(let i=0; i<3; i++){
         if(i>=numChosen) currentVote += "-0";
-        else currentVote += "-" + chosenCandidates[i].Roll;
+        else currentVote += "-" + chosenCandidates[i].roll;
     }
     currentVote = sjcl.encrypt(publicKeyofCEO, currentVote);
     
     return {
-        "PostID": parseInt(post.PostID),
-        "BallotString": encryptedBallotId,
-        "VoteData": currentVote,
+        "postId": post.postId,
+        "ballotString": encryptedBallotId,
+        "voteData": currentVote,
     };
 }
 
@@ -31,47 +31,34 @@ function getVoteDataForPost(user, post, chosenCandidates, ballotId) {
         roll: 
         password:
         data: {
-            "Roll":"",
-            "Name":"",
-            "BallotID":[],
-            "Voted":bool,
-            "CEOKey":"",
-            "State":int
+            "roll":"",
+            "name":"",
+            "ballotIds":[],
+            "voted":bool,
+            "ceoKey":"",
+            "electionState":int,
+            "posts":[],
         }
     },
     posts: [
         {
-            "PostID":"",
-            "PostName":"",
-            "Candidates":[""]
+            "postId":"",
+            "postName":"",
+            "hasNota":bool
+            "candidates":[{name, roll}]
         }
     ],
     chosenCandidates: {
         "1": [
             {
-                "Roll":"",
-                "Username":"",
-                "Name":"",
-                "PublicKey":"",
-                "Manifesto":"",
-                "State":int,
-                "KeyState":int
+                "roll":"",
+                "name":"",
             },{
-                "Roll":"",
-                "Username":"",
-                "Name":"",
-                "PublicKey":"",
-                "Manifesto":"",
-                "State":int,
-                "KeyState":int
+                "roll":"",
+                "name":"",
             },{
-                "Roll":"",
-                "Username":"",
-                "Name":"",
-                "PublicKey":"",
-                "Manifesto":"",
-                "State":int,
-                "KeyState":int
+                "roll":"",
+                "name":"",
             }
         ]
 */
@@ -84,11 +71,11 @@ export default function CalculateVoteData(user, posts, chosenCandidates){
             getVoteDataForPost(
                 user,
                 post,
-                chosenCandidates[post.PostID],
+                chosenCandidates[post.postId],
                 ballotId,
             )
         );
-        ballotIds[post.PostID] = ballotId;
+        ballotIds[post.postId] = ballotId;
     });
     return [ voteData, ballotIds ];
 }

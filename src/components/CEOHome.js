@@ -38,8 +38,8 @@ export default function CEOHome(props) {
   const onStartVotingClick = () => {
     let [ publicKey, privateKey ] = Keys.generateKeysForCEO(props.user.password);
     let data = {
-      pubkey: publicKey,
-      privkey: privateKey,
+      publicKey: publicKey,
+      privateKey: privateKey,
     };
     fetch("/ceo/startVoting", {
       method: "POST",

@@ -81,13 +81,13 @@ export default function CEOHome(props) {
     fetch("/election/getElectionState")
     .then(res => res.text())
     .then(state => {
-      if(state === "0")
+      if(state === "VotingNotYetStarted")
         setCurrentStatus(CEO_STATUS_ENUM.VOTING_NOT_STARTED);
-      else if(state === "1")
+      else if(state === "AcceptingVotes")
         setCurrentStatus(CEO_STATUS_ENUM.VOTING_ON);
-      else if(state === "2")
+      else if(state === "VotingStopped")
         setCurrentStatus(CEO_STATUS_ENUM.VOTING_OVER);
-      else if(state === "3")
+      else if(state === "ResultsCalculated")
         setCurrentStatus(CEO_STATUS_ENUM.RESULTS_SUBMITTED);
     })
     .catch(err => console.log(err));

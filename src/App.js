@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Copyright from './components/Copyright';
+import About from './components/About';
 import LRVTabbedPane from './components/LRVTabbedPane';
 import Home from './components/Home';
 import Results from './components/Results';
@@ -39,7 +39,7 @@ function App() {
   const onInit = () => {
     fetch("/election/getElectionState")
     .then(res => res.text())
-    .then(state => setResultsAvailable(state === "3"))
+    .then(state => setResultsAvailable(state === "ResultsCalculated"))
   }
   React.useEffect(onInit, []);
 
@@ -69,7 +69,7 @@ function App() {
         <LRVTabbedPane onLogin={onLogin}/>
       }
       <Box mt={8}>
-        <Copyright />
+        <About />
       </Box>
     </div>
   );

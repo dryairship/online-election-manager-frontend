@@ -34,7 +34,7 @@ export default function VoterHome(props) {
     if(!posts) {
       fetch("/data/candidates")
       .then(res => res.json())
-      .then(result => setPosts(result));
+      .then(result => setPosts(result.filter(post => props.user.data.posts.includes(post.postId))));
     }
   }
   React.useEffect(onInit, []);

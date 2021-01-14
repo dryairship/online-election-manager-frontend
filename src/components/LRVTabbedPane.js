@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import Login from './Login';
-import VerificationCode from './VerificationCode';
+//import VerificationCode from './VerificationCode';
 import Register from './Register';
 
 function TabPanel(props) {

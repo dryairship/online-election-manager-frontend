@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -89,7 +88,7 @@ export default function PostCard(props) {
             </Grid>
           </Grid>
           <Typography color="textSecondary" variant="body2">
-            {props.allowedCounts.length == 1
+            {props.allowedCounts.length === 1
               ? "You are supposed to choose exactly "+props.allowedCounts[0]+" preference(s) for this post."
               : "You can choose either 0 (NOTA) or exactly "+props.allowedCounts[1]+" preference(s) for this post."
             }
@@ -124,7 +123,7 @@ export default function PostCard(props) {
         )
       }
       {props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
-        props.candidates.filter(cand => !preferences.find(el => cand.roll==el.roll))
+        props.candidates.filter(cand => !preferences.find(el => cand.roll===el.roll))
         .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
       }
     </Grid>

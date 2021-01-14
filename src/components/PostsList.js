@@ -50,10 +50,21 @@ export default function PostsList(props) {
   }
 
   const areVotesValid = () => {
-    return props.posts.every(post =>
-      !chosenCandidates[post.postId] || chosenCandidates[post.postId].length === 0 ||
-      chosenCandidates[post.postId].length === Math.min(3, post.candidates.length)
+    return props.posts.every(post => {
+        let result = chosenCandidates[post.postId] && chosenCandidates[post.postId].length === Math.min(3, post.candidates.length);
+        if(post.hasNota)
+          return !chosenCandidates[post.postId] || chosenCandidates[post.postId].length === 0 || result;
+        else
+          return result;
+      }
     );
+  }
+
+  const getAllowedCounts = post => {
+    if(post.hasNota)
+      return [0, Math.min(3, post.candidates.length)];
+    else
+      return [Math.min(3, post.candidates.length)];
   }
 
   const submitVote = () => {
@@ -95,7 +106,13 @@ export default function PostsList(props) {
         {props.posts && 
           props.posts.map(post => (
             <Grid item xs={12} key={post.postId}>
-              <PostCard id={post.postId} name={post.postName} candidates={post.candidates} setPreferences={setPreferences}/>
+              <PostCard
+                id={post.postId}
+                name={post.postName}
+                allowedCounts={getAllowedCounts(post)}
+                candidates={post.candidates}
+                setPreferences={setPreferences}
+              />
             </Grid>
           ))
         }

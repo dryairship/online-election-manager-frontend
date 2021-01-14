@@ -28,10 +28,12 @@ export default function Login(props) {
 
   const [lStatus, setLStatus] = useState({});
 
+  const sha = text => sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(text));
+
   const login = () => {
     let rollVal = document.getElementById("l-roll").value;
     let passwordVal = document.getElementById("l-password").value;
-    let passwordHash = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(passwordVal));
+    let passwordHash = sha(sha(sha(passwordVal)));
 
     let formData = new FormData();
     formData.append('roll', rollVal);

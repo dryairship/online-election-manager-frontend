@@ -28,6 +28,8 @@ export default function Register() {
 
   const [rStatus, setRStatus] = useState({});
 
+  const sha = text => sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(text));
+
   const registerUser = () => {
     let rollVal = document.getElementById("r-roll").value;
     let passwordVal = document.getElementById("r-password").value;
@@ -43,7 +45,7 @@ export default function Register() {
       return;
     }
 
-    let passwordHash = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(passwordVal));
+    let passwordHash = sha(sha(sha(passwordVal)));
     let formData = new FormData();
     formData.append('roll', rollVal);
     formData.append('pass', passwordHash);

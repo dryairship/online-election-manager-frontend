@@ -70,7 +70,7 @@ export default function PostsList(props) {
   const submitVote = () => {
     let [ voteData, ballotIds ] = CalculateVoteData(props.user, props.posts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
-    fetch("/election/submitVote", {
+    fetch("/api/election/submitVote", {
       method: "POST",
       body: JSON.stringify(voteData),
     })

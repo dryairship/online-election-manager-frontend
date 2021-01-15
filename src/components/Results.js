@@ -7,7 +7,7 @@ export default function Results() {
   const [results, setResults] = React.useState(null);
 
   const onInit = () => {
-    fetch("/election/results")
+    fetch("/api/election/results")
     .then(res => res.json())
     .then(res => setResults(res))
     .catch(err => console.log(err));

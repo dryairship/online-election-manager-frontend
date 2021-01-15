@@ -34,7 +34,7 @@ export default function Login(props) {
   useEffect(() => {
     if(!captcha.id) {
       captcha.id = true;
-      fetch("/users/captcha")
+      fetch("/api/users/captcha")
       .then(res => res.json())
       .then(
         result => setCaptcha(result),
@@ -59,7 +59,7 @@ export default function Login(props) {
     formData.append('captchaId', captcha.id);
     formData.append('captchaValue', captchaValue);
 
-    fetch("/users/login", {
+    fetch("/api/users/login", {
       body: formData,
       method: "POST"
     }).then(

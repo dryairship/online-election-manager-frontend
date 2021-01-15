@@ -46,7 +46,7 @@ export default function CEOHome(props) {
 
   const submitResults = (finalResult) => {
     let postableResult = getPostableResult(finalResult);
-    fetch("/ceo/submitResults", {
+    fetch("/api/ceo/submitResults", {
       method: "POST",
       body: JSON.stringify(postableResult),
     })
@@ -67,7 +67,7 @@ export default function CEOHome(props) {
   }
 
   const onPrepareNextRoundClick = () => {
-    fetch("/ceo/prepareForNextRound", {
+    fetch("/api/ceo/prepareForNextRound", {
       method: "POST",
     })
     .then(
@@ -90,7 +90,7 @@ export default function CEOHome(props) {
       pubkey: publicKey,
       privkey: privateKey,
     };
-    fetch("/ceo/startVoting", {
+    fetch("/api/ceo/startVoting", {
       method: "POST",
       body: JSON.stringify(data),
     })
@@ -109,7 +109,7 @@ export default function CEOHome(props) {
   }
 
   const onStopVotingClick = () => {
-    fetch("/ceo/stopVoting", {
+    fetch("/api/ceo/stopVoting", {
       method: "POST",
     })
     .then(
@@ -127,7 +127,7 @@ export default function CEOHome(props) {
   }
 
   const onInit = () => {
-    fetch("/election/getElectionState")
+    fetch("/api/election/getElectionState")
     .then(res => res.text())
     .then(state => {
       if(state === "0")

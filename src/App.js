@@ -37,7 +37,7 @@ function App() {
   const onShowResults = () => setShowingResults(true);
 
   const onInit = () => {
-    fetch("/election/getElectionState")
+    fetch("/api/election/getElectionState")
     .then(res => res.text())
     .then(state => setResultsAvailable(state === "ResultsCalculated"))
   }

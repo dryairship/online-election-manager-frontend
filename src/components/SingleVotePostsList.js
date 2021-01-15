@@ -36,7 +36,7 @@ export default function PostsList(props) {
   
   const onInit = () => {
     if(!availablePosts) {
-      fetch("/election/getVotablePosts")
+      fetch("/api/election/getVotablePosts")
       .then(res => res.json())
       .then(
         result => setAvailablePosts(result),
@@ -73,7 +73,7 @@ export default function PostsList(props) {
   const submitVote = () => {
     let [ voteData, ballotIds ] = CalculateSingleVoteData(props.user, availablePosts, chosenCandidates);
     console.log("Vote Data: "+JSON.stringify(voteData));
-    fetch("/election/submitVote", {
+    fetch("/api/election/submitVote", {
       method: "POST",
       body: JSON.stringify(voteData),
     })

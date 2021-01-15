@@ -41,7 +41,7 @@ export default function CEOHome(props) {
       publicKey: publicKey,
       privateKey: privateKey,
     };
-    fetch("/ceo/startVoting", {
+    fetch("/api/ceo/startVoting", {
       method: "POST",
       body: JSON.stringify(data),
     })
@@ -60,7 +60,7 @@ export default function CEOHome(props) {
   }
 
   const onStopVotingClick = () => {
-    fetch("/ceo/stopVoting", {
+    fetch("/api/ceo/stopVoting", {
       method: "POST",
     })
     .then(
@@ -78,7 +78,7 @@ export default function CEOHome(props) {
   }
 
   const onInit = () => {
-    fetch("/election/getElectionState")
+    fetch("/api/election/getElectionState")
     .then(res => res.text())
     .then(state => {
       if(state === "VotingNotYetStarted")

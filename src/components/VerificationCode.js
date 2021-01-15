@@ -31,7 +31,7 @@ export default function VerificationCode() {
   useEffect(() => {
     if(!captcha.id) {
       captcha.id = true;
-      fetch("/users/captcha")
+      fetch("/api/users/captcha")
       .then(res => res.json())
       .then(
         result => setCaptcha(result),
@@ -55,7 +55,7 @@ export default function VerificationCode() {
       severity: "success",
       message: "Sending mail...",
     })
-    fetch("/users/mail/"+rollVal, {
+    fetch("/api/users/mail/"+rollVal, {
       method: 'POST',
       body: JSON.stringify(captchaVal),
     }).then(

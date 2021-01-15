@@ -32,7 +32,7 @@ export default function VoterHome(props) {
     }
 
     if(!posts) {
-      fetch("/data/candidates")
+      fetch("/api/data/candidates?version="+Math.random())
       .then(res => res.json())
       .then(result => setPosts(result.filter(post => props.user.data.posts.includes(post.postId))));
     }

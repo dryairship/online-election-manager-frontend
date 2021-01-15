@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -26,18 +26,38 @@ const useStyles = makeStyles((theme) => ({
 export default function Login(props) {
   const classes = useStyles();
 
+  const [captcha, setCaptcha] = useState({});
   const [lStatus, setLStatus] = useState({});
 
   const sha = text => sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(text));
 
+  useEffect(() => {
+    if(!captcha.id) {
+      captcha.id = true;
+      fetch("/users/captcha")
+      .then(res => res.json())
+      .then(
+        result => setCaptcha(result),
+        _ => setLStatus({
+          display: true,
+          severity: "error",
+          message: "CAPTCHA service is not working",
+        }),
+      );
+    }
+  });
+
   const login = () => {
     let rollVal = document.getElementById("l-roll").value;
     let passwordVal = document.getElementById("l-password").value;
+    let captchaValue = document.getElementById("l-captcha").value;
     let passwordHash = sha(sha(sha(passwordVal)));
 
     let formData = new FormData();
     formData.append('roll', rollVal);
     formData.append('pass', passwordHash);
+    formData.append('captchaId', captcha.id);
+    formData.append('captchaValue', captchaValue);
 
     fetch("/users/login", {
       body: formData,
@@ -69,6 +89,7 @@ export default function Login(props) {
         message: "Error while making a request. Please check your internet connection."
       }),
     );
+    setCaptcha({});
   }
 
   return (
@@ -79,6 +100,19 @@ export default function Login(props) {
           <Alert severity={lStatus.severity}>{lStatus.message}</Alert>
         }
         <form className={classes.form} noValidate>
+          <Grid container justify="center">
+            <img src={captcha.value} alt="CAPTCHA" />
+          </Grid>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="l-captcha"
+            label="CAPTCHA"
+            name="captcha"
+            autoFocus
+          />
           <TextField
             variant="outlined"
             margin="normal"
@@ -88,7 +122,6 @@ export default function Login(props) {
             label="Roll Number"
             name="roll"
             autoComplete="roll"
-            autoFocus
           />
           <TextField
             variant="outlined"

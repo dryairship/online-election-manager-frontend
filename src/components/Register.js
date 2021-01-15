@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -26,16 +26,33 @@ const useStyles = makeStyles((theme) => ({
 export default function Register() {
   const classes = useStyles();
 
+  const [captcha, setCaptcha] = useState({});
   const [rStatus, setRStatus] = useState({});
 
   const sha = text => sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(text));
+  useEffect(() => {
+    if(!captcha.id) {
+      captcha.id = true;
+      fetch("/users/captcha")
+      .then(res => res.json())
+      .then(
+        result => setCaptcha(result),
+        _ => setRStatus({
+          display: true,
+          severity: "error",
+          message: "CAPTCHA service is not working",
+        }),
+      );
+    }
+  });
 
   const registerUser = () => {
     let rollVal = document.getElementById("r-roll").value;
     let passwordVal = document.getElementById("r-password").value;
     let confirmPasswordVal = document.getElementById("r-confirm-password").value;
     let verificationCodeVal = document.getElementById("r-verification-code").value;
-    
+    let captchaValue = document.getElementById("r-captcha").value;
+
     if(passwordVal !== confirmPasswordVal) {
       setRStatus({
         display: true,
@@ -50,6 +67,8 @@ export default function Register() {
     formData.append('roll', rollVal);
     formData.append('pass', passwordHash);
     formData.append('auth', verificationCodeVal);
+    formData.append('captchaId', captcha.id);
+    formData.append('captchaValue', captchaValue);
 
     fetch("/users/register", {
       body: formData,
@@ -57,6 +76,9 @@ export default function Register() {
     }).then(
       response => {
         let code = response.status;
+        if(code===202) {
+          document.getElementById("registration-form").reset();
+        }
         response.text().then(text => 
           setRStatus({
             display: true,
@@ -71,6 +93,7 @@ export default function Register() {
         message: "Error while making a request. Please check your internet connection."
       }),
     );
+    setCaptcha({});
   }
 
   return (
@@ -80,7 +103,20 @@ export default function Register() {
         {rStatus.display && // Only display if rStatus.display is true
           <Alert severity={rStatus.severity}>{rStatus.message}</Alert>
         }
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate id="registration-form">
+          <Grid container justify="center">
+            <img src={captcha.value} alt="CAPTCHA" />
+          </Grid>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="r-captcha"
+            label="CAPTCHA"
+            name="captcha"
+            autoFocus
+          />
           <TextField
             variant="outlined"
             margin="normal"
@@ -90,7 +126,6 @@ export default function Register() {
             label="Roll Number"
             name="roll"
             autoComplete="roll"
-            autoFocus
           />
           <TextField
             variant="outlined"

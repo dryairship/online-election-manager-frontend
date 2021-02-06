@@ -24,6 +24,16 @@ export default function VoterHome(props) {
     setVoted(true);
   }
 
+  const shuffleArray = (array) => {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+  }
+
+
   const onInit = () => {
     setElectionState(props.user.data.electionState);
 
@@ -34,7 +44,10 @@ export default function VoterHome(props) {
     if(!posts) {
       fetch("/api/data/candidates?version="+Math.random())
       .then(res => res.json())
-      .then(result => setPosts(result.filter(post => props.user.data.posts.includes(post.postId))));
+      .then(result => {
+        result.forEach(post => {shuffleArray(post.candidates);});
+        setPosts(result.filter(post => props.user.data.posts.includes(post.postId)));
+      });
     }
   }
   React.useEffect(onInit, []);

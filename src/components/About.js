@@ -9,8 +9,12 @@ export default function About() {
 
   return (showName ?
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Open source software built by '}
-      <Link color="inherit" target="_blank" href="https://dryairship.github.io/?utm_source=elections.pclub.in&utm_medium=referral&utm_campaign=elections">
+      {'Improved version of an '}
+      <Link color="black" target="_blank" href="https://github.com/dryairship/online-election-manager">
+        ESC101A Project
+      </Link>
+      {' built by '}
+      <Link color="black" target="_blank" href="https://dryairship.github.io/?utm_source=elections.pclub.in&utm_medium=referral&utm_campaign=ge2021">
         Priydarshi Singh.
       </Link>
     </Typography>

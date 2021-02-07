@@ -10,6 +10,16 @@ import Chip from '@material-ui/core/Chip';
 import CandidateCard from './CandidateCard';
 import Divider from '@material-ui/core/Divider';
 
+export const CHOICE_STATUS_ENUM = Object.freeze({
+  NOTHING_CHOSEN: 1,
+  CANDIDATE_CHOSEN: 2,
+  NOTA_CHOSEN: 3,
+});
+
+const CANDIDATE_NOTA = Object.freeze({
+  name: "NOTA",
+  roll: "0",
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,28 +48,38 @@ export default function PostCard(props) {
     name: string
     allowedCounts: array of numbers
     candidates: array of candidates {name, roll}
-    updatePreferences: function
+    setPreferences: function
+    setChoiceStatus: function
   }
   */
 
   const classes = useStyles();
 
   const [preferences, setPreferences] = useState([]);
+  const [choiceStatus, setChoiceStatus] = useState(CHOICE_STATUS_ENUM.NOTHING_CHOSEN);
 
   const onVote = candidate => {
-    setPreferences([...preferences, candidate]);
+    if(candidate.roll === "0"){
+      setChoiceStatus(CHOICE_STATUS_ENUM.NOTA_CHOSEN);
+      setPreferences([]);
+    }else{
+      setChoiceStatus(CHOICE_STATUS_ENUM.CANDIDATE_CHOSEN);
+      setPreferences([...preferences, candidate]);
+    }
   }
 
   const resetVote = () => {
     setPreferences([]);
+    setChoiceStatus(CHOICE_STATUS_ENUM.NOTHING_CHOSEN);
   }
 
   const informParentAboutChange = () => {
     props.setPreferences(props.id, preferences);
+    props.setChoiceStatus(props.id, choiceStatus);
   }
-  React.useEffect(informParentAboutChange, [preferences]);
+  React.useEffect(informParentAboutChange, [preferences, choiceStatus]);
 
-  const preferencesValid = () => props.allowedCounts.includes(preferences.length);
+  const preferencesValid = () => choiceStatus !== CHOICE_STATUS_ENUM.NOTHING_CHOSEN && props.allowedCounts.includes(preferences.length);
 
   return (
     <Grid container
@@ -81,8 +101,7 @@ export default function PostCard(props) {
               <Typography gutterBottom variant="h6">
                 <Chip
                   color={preferencesValid() ? "primary" : "secondary"}
-                  label={preferences.length === 0 ? "Current Choice: NOTA" :
-                    (preferencesValid() ? "Choices valid" : "Choices invalid")}
+                  label={preferencesValid() ? "Choices valid" : "Choices invalid"}
                 />
               </Typography>
             </Grid>
@@ -90,7 +109,7 @@ export default function PostCard(props) {
           <Typography color="textSecondary" variant="body2">
             {props.allowedCounts.length === 1
               ? "You are supposed to choose exactly "+props.allowedCounts[0]+" preference(s) for this post."
-              : "You can choose either 0 (NOTA) or exactly "+props.allowedCounts[1]+" preference(s) for this post."
+              : "You can choose either NOTA or exactly "+props.allowedCounts[1]+" preference(s) for this post."
             }
           </Typography>
         </CardContent>
@@ -122,7 +141,44 @@ export default function PostCard(props) {
           </Grid>
         )
       }
-      {props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
+      {choiceStatus === CHOICE_STATUS_ENUM.NOTA_CHOSEN
+        && (
+          <Grid item xs={12}>
+            <Card className={classes.card}>
+              <CardContent>
+                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                  Chosen Candidates
+                </Typography>
+                {[CANDIDATE_NOTA].map((candidate, index) => (
+                  <div key={index}>
+                    <Typography variant="h5" component="h2">
+                      {(index+1)+". "+candidate.name}
+                    </Typography>
+                    <Typography color="textSecondary" gutterBottom>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{candidate.roll}
+                    </Typography>
+                  </div>
+                ))}
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={resetVote} variant="contained" color="secondary">Reset Vote</Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        )
+      }
+      {choiceStatus === CHOICE_STATUS_ENUM.NOTHING_CHOSEN &&
+        props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
+        (props.allowedCounts.length === 1 ?
+            props.candidates.filter(cand => !preferences.find(el => cand.roll===el.roll))
+            .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
+          :
+            props.candidates.concat(CANDIDATE_NOTA).filter(cand => !preferences.find(el => cand.roll===el.roll))
+            .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
+        )
+      }
+      {choiceStatus === CHOICE_STATUS_ENUM.CANDIDATE_CHOSEN &&
+        props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
         props.candidates.filter(cand => !preferences.find(el => cand.roll===el.roll))
         .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
       }

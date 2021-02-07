@@ -3,7 +3,7 @@ import Alert from '@material-ui/lab/Alert';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import PostCard from './PostCard';
+import PostCard, {CHOICE_STATUS_ENUM} from './PostCard';
 import Button from '@material-ui/core/Button';
 import ConfirmVotes from './ConfirmVotes';
 import CalculateVoteData from '../utils/VoteCalculator';
@@ -32,11 +32,26 @@ export default function PostsList(props) {
   const [vhStatus, setVHStatus] = useState({});
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [chosenCandidates, setChosenCandidates] = useState({});
+  const [allChoiceStatus, setAllChoiceStatus] = useState({});
+
+  React.useEffect(() => {
+    if(!props.posts) return;
+    let tmp = {};
+    props.posts.forEach(post => {tmp[post.postId] = CHOICE_STATUS_ENUM.NOTHING_CHOSEN});
+    setAllChoiceStatus(tmp);
+  }, [props.posts]);
 
   const setPreferences = (postId, preferences) => {
     setChosenCandidates({
       ...chosenCandidates,
       [postId]: preferences,
+    });
+  }
+
+  const setChoiceStatus = (postId, status) => {
+    setAllChoiceStatus({
+      ...allChoiceStatus,
+      [postId]: status,
     });
   }
 
@@ -50,6 +65,9 @@ export default function PostsList(props) {
   }
 
   const areVotesValid = () => {
+    console.log("Choices any:", allChoiceStatus, props.posts.some(post => allChoiceStatus[post.postId] === CHOICE_STATUS_ENUM.NOTHING_CHOSEN));
+    if(props.posts.some(post => allChoiceStatus[post.postId] === CHOICE_STATUS_ENUM.NOTHING_CHOSEN))
+      return false;
     return props.posts.every(post => {
         let result = chosenCandidates[post.postId] && chosenCandidates[post.postId].length === Math.min(3, post.candidates.length);
         if(post.hasNota)
@@ -112,6 +130,7 @@ export default function PostsList(props) {
                 allowedCounts={getAllowedCounts(post)}
                 candidates={post.candidates}
                 setPreferences={setPreferences}
+                setChoiceStatus={setChoiceStatus}
               />
             </Grid>
           ))

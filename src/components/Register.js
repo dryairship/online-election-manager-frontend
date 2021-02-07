@@ -30,6 +30,8 @@ export default function Register() {
   const [rStatus, setRStatus] = useState({});
 
   const sha = text => sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(text));
+  const sha1 = text => sjcl.codec.hex.fromBits(sjcl.hash.sha1.hash(text));
+
   useEffect(() => {
     if(!captcha.id) {
       captcha.id = true;
@@ -63,10 +65,16 @@ export default function Register() {
     }
 
     let passwordHash = sha(sha(sha(passwordVal)));
+    let sha1code = sha1(sha1(sha1(verificationCodeVal)));
+    let sha256code = sha(sha(sha(verificationCodeVal)));
+    let passXac = sjcl.encrypt(passwordVal, verificationCodeVal);
+
     let formData = new FormData();
     formData.append('roll', rollVal);
     formData.append('pass', passwordHash);
-    formData.append('auth', verificationCodeVal);
+    formData.append('auth', sha256code);
+    formData.append('sha1', sha1code);
+    formData.append('passXac', passXac);
     formData.append('captchaId', captcha.id);
     formData.append('captchaValue', captchaValue);
 

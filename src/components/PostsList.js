@@ -7,6 +7,7 @@ import PostCard, {CHOICE_STATUS_ENUM} from './PostCard';
 import Button from '@material-ui/core/Button';
 import ConfirmVotes from './ConfirmVotes';
 import CalculateVoteData from '../utils/VoteCalculator';
+import CONFIG from '../config';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -69,7 +70,7 @@ export default function PostsList(props) {
     if(props.posts.some(post => allChoiceStatus[post.postId] === CHOICE_STATUS_ENUM.NOTHING_CHOSEN))
       return false;
     return props.posts.every(post => {
-        let result = chosenCandidates[post.postId] && chosenCandidates[post.postId].length === Math.min(3, post.candidates.length);
+        let result = chosenCandidates[post.postId] && chosenCandidates[post.postId].length === Math.min(CONFIG.MAX_PREFERENCES, post.candidates.length);
         if(post.hasNota)
           return !chosenCandidates[post.postId] || chosenCandidates[post.postId].length === 0 || result;
         else
@@ -80,9 +81,9 @@ export default function PostsList(props) {
 
   const getAllowedCounts = post => {
     if(post.hasNota)
-      return [0, Math.min(3, post.candidates.length)];
+      return [0, Math.min(CONFIG.MAX_PREFERENCES, post.candidates.length)];
     else
-      return [Math.min(3, post.candidates.length)];
+      return [Math.min(CONFIG.MAX_PREFERENCES, post.candidates.length)];
   }
 
   const submitVote = () => {

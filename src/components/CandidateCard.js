@@ -7,6 +7,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import CONFIG from '../config';
 
 const useStyles = makeStyles({
   cCard: {
@@ -33,11 +34,13 @@ export default function CandidateCard(props) {
     <Grid item xs={3} className={classes.cCard}>
         {props.id && (
           <Card>
-            <CardMedia
-              className={classes.media}
-              image={"/photo/"+props.id.roll+".jpg"}
-              title={props.id.roll}
-            />
+            {CONFIG.DISPLAY_PHOTOS &&
+              <CardMedia
+                className={classes.media}
+                image={"/photo/"+props.id.roll+".jpg"}
+                title={props.id.roll}
+              />
+            }
             <CardContent>
               <Typography variant="h5" component="h2">
                 {props.id.name}

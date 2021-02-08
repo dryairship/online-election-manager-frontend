@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import CandidateCard from './CandidateCard';
 import Divider from '@material-ui/core/Divider';
+import CONFIG from '../config';
 
 export const CHOICE_STATUS_ENUM = Object.freeze({
   NOTHING_CHOSEN: 1,
@@ -164,7 +165,7 @@ export default function PostCard(props) {
         )
       }
       {choiceStatus === CHOICE_STATUS_ENUM.NOTHING_CHOSEN &&
-        props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
+        props.candidates && preferences.length < Math.min(CONFIG.MAX_PREFERENCES, props.candidates.length) &&
         (props.allowedCounts.length === 1 ?
             props.candidates.filter(cand => !preferences.find(el => cand.roll===el.roll))
             .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
@@ -174,7 +175,7 @@ export default function PostCard(props) {
         )
       }
       {choiceStatus === CHOICE_STATUS_ENUM.CANDIDATE_CHOSEN &&
-        props.candidates && preferences.length < Math.min(3, props.candidates.length) &&
+        props.candidates && preferences.length < Math.min(CONFIG.MAX_PREFERENCES, props.candidates.length) &&
         props.candidates.filter(cand => !preferences.find(el => cand.roll===el.roll))
         .map(candidate => <CandidateCard id={candidate} onVote={onVote} key={candidate}/>)
       }

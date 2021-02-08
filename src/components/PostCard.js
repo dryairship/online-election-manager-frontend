@@ -37,9 +37,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#ebd9ff",
   },
   title: {
-    fontSize: 14,
+    fontSize: 18,
   },
 }));
+
+const prefText = ["First", "Second", "Third"];
 
 export default function PostCard(props) {
   /*
@@ -106,7 +108,7 @@ export default function PostCard(props) {
               </Typography>
             </Grid>
           </Grid>
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary" variant="body2"  className={classes.title}>
             {props.allowedCounts.length === 1
               ? "You are supposed to choose exactly "+props.allowedCounts[0]+" preference(s) for this post."
               : "You can choose either NOTA or exactly "+props.allowedCounts[1]+" preference(s) for this post."
@@ -120,17 +122,21 @@ export default function PostCard(props) {
           <Grid item xs={12}>
             <Card className={classes.card}>
               <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  Chosen Candidates
+                <Typography className={classes.title} gutterBottom>
+                  <u>Chosen Candidates</u>
                 </Typography>
                 {preferences.map((candidate, index) => (
                   <div key={index}>
+                    <Typography gutterBottom>
+                    {prefText[index]+" preference:"}
+                    </Typography>
                     <Typography variant="h5" component="h2">
                       {(index+1)+". "+candidate.name}
                     </Typography>
                     <Typography color="textSecondary" gutterBottom>
-                    &nbsp;&nbsp;&nbsp;&nbsp;{candidate.roll}
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{candidate.roll}
                     </Typography>
+                    <hr/>
                   </div>
                 ))}
               </CardContent>
@@ -146,19 +152,9 @@ export default function PostCard(props) {
           <Grid item xs={12}>
             <Card className={classes.card}>
               <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  Chosen Candidates
+                <Typography variant="h5" gutterBottom>
+                  You have chosen NOTA.
                 </Typography>
-                {[CANDIDATE_NOTA].map((candidate, index) => (
-                  <div key={index}>
-                    <Typography variant="h5" component="h2">
-                      {(index+1)+". "+candidate.name}
-                    </Typography>
-                    <Typography color="textSecondary" gutterBottom>
-                    &nbsp;&nbsp;&nbsp;&nbsp;{candidate.roll}
-                    </Typography>
-                  </div>
-                ))}
               </CardContent>
               <CardActions>
                 <Button size="small" onClick={resetVote} variant="contained" color="secondary">Reset Vote</Button>

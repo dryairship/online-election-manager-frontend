@@ -135,7 +135,8 @@ export default function PostsList(props) {
             </Grid>
           ))
         }
-        {props.posts && areVotesValid() &&
+        {props.posts &&
+        ( areVotesValid() ?
           <Grid container justify="center">
             <Button
               type="button"
@@ -148,6 +149,9 @@ export default function PostsList(props) {
               Submit
             </Button>
           </Grid>
+          :
+          <Alert severity="error">Some of your choices are invalid.</Alert>
+        )
         }
         <ConfirmVotes open={confirmDialogOpen} onClose={onConfirmReply} posts={props.posts} candidates={chosenCandidates}/>
     </Grid>
